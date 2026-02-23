@@ -241,10 +241,19 @@ public class RobotContainer {
             new RunCommand(
                 () -> intakePivotSubsystem.setIntakePivotSpeed(0), intakePivotSubsystem));
 
+    new JoystickButton(m_Joystick0, 5)
+        .onTrue(
+            new RunCommand(
+                () ->
+                    shooterFeederSubsystem.setShooterFeederSpeed(
+                        -Constants.ShooterFeederConstants.shooterFeederSpeed),
+                shooterFeederSubsystem))
+        .onFalse(new RunCommand(() -> shooterFeederSubsystem.setShooterFeederSpeed(0)));
+
     /*new JoystickButton(m_Joystick0, 1)
     .onTrue(new RunCommand(
         () -> m_robotDrive.setX(),
-        m_robotDrive));*/
+        m_robotDrive));
 
     // Run example motor at set speed when Y button is held
     /*controller

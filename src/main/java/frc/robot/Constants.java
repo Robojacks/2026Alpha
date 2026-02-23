@@ -32,7 +32,7 @@ public final class Constants {
   public static class IntakeConstants {
     public static final int intakeMotorCanId = 14;
 
-    public static final double intakeSpeed = -0.5;
+    public static final double intakeSpeed = -1;
   }
 
   public static class IntakePivotConstants {
@@ -44,13 +44,13 @@ public final class Constants {
   public static class ShooterConstants {
     public static final int shooterMotorCanId = 11;
 
-    public static final double shooterSpeed = 0.6;
+    public static final double shooterSpeed = 0.5;
   }
 
   public static class ShooterFeederConstants {
     public static final int shooterFeederMotorCanId = 12;
 
-    public static final double shooterFeederSpeed = 0.6;
+    public static final double shooterFeederSpeed = 0.65;
   }
 
   public static class AgitatorConstants {

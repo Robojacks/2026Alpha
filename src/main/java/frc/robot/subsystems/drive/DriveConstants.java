@@ -18,8 +18,8 @@ public class DriveConstants {
   public static final int kDriverControllerPort0 = 0;
   public static final int kDriverControllerPort1 = 1;
   public static final double kDriveDeadband = 0.05;
-  public static final double maxSpeedMetersPerSec = 1;
-  public static final double odometryFrequency = 100.0; // Hz
+  public static final double maxSpeedMetersPerSec = 4.8;
+  public static final double odometryFrequency = 100; // Hz
   public static final double trackWidth = Units.inchesToMeters(24);
   public static final double wheelBase = Units.inchesToMeters(24);
   public static final double driveBaseRadius = Math.hypot(trackWidth / 2.0, wheelBase / 2.0);
@@ -47,8 +47,8 @@ public class DriveConstants {
 
   public static final int frontLeftTurnCanId = 5;
   public static final int backLeftTurnCanId = 6;
-  public static final int frontRightTurnCanId = 7;
-  public static final int backRightTurnCanId = 8;
+  public static final int frontRightTurnCanId = 8;
+  public static final int backRightTurnCanId = 7;
 
   // Drive motor configuration
   public static final int driveMotorCurrentLimit = 50;
