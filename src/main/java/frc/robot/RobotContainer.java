@@ -8,6 +8,8 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -175,9 +177,18 @@ public class RobotContainer {
         () -> -MathUtil.applyDeadband(m_Joystick0.getX() * 0.25, DriveConstants.kDriveDeadband),
         () -> -MathUtil.applyDeadband(m_Joystick1.getX(), DriveConstants.kDriveDeadband)));
         */
-    drive.setDefaultCommand(
+    // old sort of working code
+    /*drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive, () -> m_Joystick0.getY(), () -> m_Joystick0.getX(), () -> m_Joystick1.getX()));
+    */
+    boolean isRed = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
+    drive.setDefaultCommand(
+        DriveCommands.joystickDrive(
+            drive,
+            () -> m_Joystick0.getY() * (isRed ? -1 : 1),
+            () -> m_Joystick0.getX() * (isRed ? -1 : 1),
+            () -> m_Joystick1.getX() * (isRed ? -1 : 1)));
 
     /*new JoystickButton(m_Joystick1, 1)
     .onTrue(
