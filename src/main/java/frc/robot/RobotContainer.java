@@ -14,7 +14,9 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
@@ -199,10 +201,37 @@ public class RobotContainer {
             .andThen(() -> agitatorSubsystem.setAgitatorSpeed(0.5), agitatorSubsystem));*/
     new JoystickButton(m_Joystick1, 1)
         .onTrue(
-            new RunCommand(
-                () -> shooterSubsystem.setShooterSpeed(Constants.ShooterConstants.shooterSpeed),
-                shooterSubsystem))
-        .onFalse(new RunCommand(() -> shooterSubsystem.setShooterSpeed(0), shooterSubsystem));
+            new ParallelCommandGroup(
+                new RunCommand(
+                    () -> shooterSubsystem.setShooterSpeed(Constants.ShooterConstants.shooterSpeed),
+                    shooterSubsystem),
+                new WaitCommand(0.5)
+                    .andThen(
+                        new RunCommand(
+                            () ->
+                                shooterFeederSubsystem.setShooterFeederSpeed(
+                                    Constants.ShooterFeederConstants.shooterFeederSpeed),
+                            shooterFeederSubsystem)),
+                new WaitCommand(0.5)
+                    .andThen(
+                        new RunCommand(
+                            () ->
+                                agitatorSubsystem.setAgitatorSpeed(
+                                    Constants.AgitatorConstants.agitatorSpeed),
+                            agitatorSubsystem))))
+        .onFalse(
+            new ParallelCommandGroup(
+                new RunCommand(
+                    () -> shooterFeederSubsystem.setShooterFeederSpeed(0), shooterFeederSubsystem),
+                new RunCommand(() -> shooterSubsystem.setShooterSpeed(0), shooterSubsystem),
+                new RunCommand(() -> agitatorSubsystem.setAgitatorSpeed(0), agitatorSubsystem)));
+
+    /*new JoystickButton(m_Joystick1, 1)
+    .onTrue(
+        new RunCommand(
+            () -> shooterSubsystem.setShooterSpeed(Constants.ShooterConstants.shooterSpeed),
+            shooterSubsystem))
+    .onFalse(new RunCommand(() -> shooterSubsystem.setShooterSpeed(0), shooterSubsystem));*/
 
     new JoystickButton(m_Joystick0, 6)
         .onTrue(
@@ -259,7 +288,9 @@ public class RobotContainer {
                     shooterFeederSubsystem.setShooterFeederSpeed(
                         -Constants.ShooterFeederConstants.shooterFeederSpeed),
                 shooterFeederSubsystem))
-        .onFalse(new RunCommand(() -> shooterFeederSubsystem.setShooterFeederSpeed(0)));
+        .onFalse(
+            new RunCommand(
+                () -> shooterFeederSubsystem.setShooterFeederSpeed(0), shooterFeederSubsystem));
 
     /*new JoystickButton(m_Joystick0, 1)
     .onTrue(new RunCommand(
