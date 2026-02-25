@@ -233,31 +233,31 @@ public class RobotContainer {
             shooterSubsystem))
     .onFalse(new RunCommand(() -> shooterSubsystem.setShooterSpeed(0), shooterSubsystem));*/
 
-    new JoystickButton(m_Joystick0, 6)
+    new JoystickButton(m_Joystick0, 1)
         .onTrue(
             new RunCommand(
                 () -> intakeSubsystem.setIntakeSpeed(Constants.IntakeConstants.intakeSpeed),
                 intakeSubsystem))
         .onFalse(new RunCommand(() -> intakeSubsystem.setIntakeSpeed(0), intakeSubsystem));
 
-    new JoystickButton(m_Joystick0, 1)
-        .onTrue(
-            new RunCommand(
+    /*new JoystickButton(m_Joystick0, 1)
+    .onTrue(
+        new RunCommand(
+                () ->
+                    shooterFeederSubsystem.setShooterFeederSpeed(
+                        Constants.ShooterFeederConstants.shooterFeederSpeed),
+                shooterFeederSubsystem)
+            .alongWith(
+                new RunCommand(
                     () ->
-                        shooterFeederSubsystem.setShooterFeederSpeed(
-                            Constants.ShooterFeederConstants.shooterFeederSpeed),
-                    shooterFeederSubsystem)
-                .alongWith(
-                    new RunCommand(
-                        () ->
-                            agitatorSubsystem.setAgitatorSpeed(
-                                -Constants.AgitatorConstants.agitatorSpeed))))
-        .onFalse(
-            new RunCommand(() -> agitatorSubsystem.setAgitatorSpeed(0), agitatorSubsystem)
-                .alongWith(
-                    new RunCommand(
-                        () -> shooterFeederSubsystem.setShooterFeederSpeed(0),
-                        shooterFeederSubsystem)));
+                        agitatorSubsystem.setAgitatorSpeed(
+                            -Constants.AgitatorConstants.agitatorSpeed))))
+    .onFalse(
+        new RunCommand(() -> agitatorSubsystem.setAgitatorSpeed(0), agitatorSubsystem)
+            .alongWith(
+                new RunCommand(
+                    () -> shooterFeederSubsystem.setShooterFeederSpeed(0),
+                    shooterFeederSubsystem)));*/
 
     new JoystickButton(m_Joystick1, 5)
         .onTrue(
