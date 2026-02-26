@@ -62,6 +62,6 @@ public final class Constants {
   public static class RollersConstants {
     public static final int rollersMotorCanId = 15;
 
-    public static final double rollsersSpeed = 0.5;
+    public static final double rollersSpeed = 0.5;
   }
 }

@@ -16,10 +16,12 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.subsystems.RollersSubsystem;
 import frc.robot.subsystems.AgitatorSubsystem;
 import frc.robot.subsystems.IntakePivotSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -42,7 +44,8 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public class RobotContainer {
 
-  // Subsystems
+  
+// Subsystems
   private final Drive drive;
   // private final ExampleSubsystem exampleSubsystem;
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
@@ -218,13 +221,22 @@ public class RobotContainer {
                             () ->
                                 agitatorSubsystem.setAgitatorSpeed(
                                     Constants.AgitatorConstants.agitatorSpeed),
-                            agitatorSubsystem))))
+                            agitatorSubsystem)),
+                new WaitCommand(0.5)
+                    .andThen(
+                        new RunCommand(
+                            () ->
+                                rollersSubsystem.setRollersSpeed(
+                                    Constants.RollersConstants.rollersSpeed),
+                            rollersSubsystem))
+                    ))
         .onFalse(
             new ParallelCommandGroup(
                 new RunCommand(
                     () -> shooterFeederSubsystem.setShooterFeederSpeed(0), shooterFeederSubsystem),
                 new RunCommand(() -> shooterSubsystem.setShooterSpeed(0), shooterSubsystem),
-                new RunCommand(() -> agitatorSubsystem.setAgitatorSpeed(0), agitatorSubsystem)));
+                new RunCommand(() -> agitatorSubsystem.setAgitatorSpeed(0), agitatorSubsystem),
+                new RunCommand(() -> rollersSubsystem.setRollersSpeed(0), rollersSubsystem)));
 
     /*new JoystickButton(m_Joystick1, 1)
     .onTrue(
