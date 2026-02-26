@@ -10,8 +10,7 @@ import frc.robot.Constants;
 
 public class RollersSubsystem extends SubsystemBase {
   SparkFlex rollersMotor =
-      new SparkFlex(
-            Constants.RollersConstants.rollersMotorCanId, SparkFlex.MotorType.kBrushless);
+      new SparkFlex(Constants.RollersConstants.rollersMotorCanId, SparkFlex.MotorType.kBrushless);
 
   public RollersSubsystem() {
     SparkFlexConfig rollersMotorConfig = new SparkFlexConfig();
@@ -24,5 +23,4 @@ public class RollersSubsystem extends SubsystemBase {
   public void setRollersSpeed(double speed) {
     rollersMotor.set(speed);
   }
-    
 }
