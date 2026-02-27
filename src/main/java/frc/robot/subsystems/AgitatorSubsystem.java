@@ -5,7 +5,6 @@ import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -27,16 +26,11 @@ public class AgitatorSubsystem extends SubsystemBase {
     agitatorMotor.set(speed);
   }
 
-  
-
   public Command autoAgitatorCommand() {
     return Commands.sequence(
-      Commands.waitSeconds(0.5),
-      Commands.runOnce(() -> setAgitatorSpeed(Constants.AgitatorConstants.agitatorSpeed)),
-      Commands.waitSeconds(5),
-      Commands.runOnce(() -> setAgitatorSpeed(0)));
-
-
+        Commands.waitSeconds(0.5),
+        Commands.runOnce(() -> setAgitatorSpeed(Constants.AgitatorConstants.agitatorSpeed)),
+        Commands.waitSeconds(5),
+        Commands.runOnce(() -> setAgitatorSpeed(0)));
   }
-
 }

@@ -7,13 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "straight"
+            "pathName": "LeftSideShoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": null
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "turnninety"
+            "pathName": "LeftOutToIntake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": null
           }
         }
       ]

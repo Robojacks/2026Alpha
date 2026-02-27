@@ -5,7 +5,6 @@ import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -28,16 +27,12 @@ public class ShooterFeederSubsystem extends SubsystemBase {
     shooterFeederMotor.set(speed);
   }
 
-
-   public Command autoShooterFeederCommand() {
+  public Command autoShooterFeederCommand() {
     return Commands.sequence(
-      Commands.waitSeconds(0.5),
-      Commands.runOnce(() -> setShooterFeederSpeed(Constants.ShooterFeederConstants.shooterFeederSpeed)),
-      Commands.waitSeconds(5),
-      Commands.runOnce(() -> setShooterFeederSpeed(0)));
-
+        Commands.waitSeconds(0.5),
+        Commands.runOnce(
+            () -> setShooterFeederSpeed(Constants.ShooterFeederConstants.shooterFeederSpeed)),
+        Commands.waitSeconds(5),
+        Commands.runOnce(() -> setShooterFeederSpeed(0)));
   }
-
-
-
 }

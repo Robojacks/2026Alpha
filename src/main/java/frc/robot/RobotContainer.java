@@ -8,34 +8,27 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.commands.DriveCommands;
+import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.AgitatorSubsystem;
+import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakePivotSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.RollersSubsystem;
 import frc.robot.subsystems.ShooterFeederSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.DriveConstants;
-import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIOPigeon2;
-import frc.robot.subsystems.drive.ModuleIO;
-import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.drive.ModuleIOSpark;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import com.pathplanner.lib.auto.NamedCommands;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -46,7 +39,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 public class RobotContainer {
 
   // Subsystems
-  private final Drive drive;
+  private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
   // private final ExampleSubsystem exampleSubsystem;
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
@@ -57,69 +50,17 @@ public class RobotContainer {
 
   // Controller
   // private final CommandXboxController controller = new CommandXboxController(0);
-  private final Joystick m_Joystick0 = new Joystick(DriveConstants.kDriverControllerPort0);
-  private final Joystick m_Joystick1 = new Joystick(DriveConstants.kDriverControllerPort1);
+  private final Joystick m_Joystick0 = new Joystick((OIConstants.kDriverControllerPort));
+  private final Joystick m_Joystick1 = new Joystick((OIConstants.kOperatorControllerPort));
+
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    switch (Constants.currentMode) {
-      case REAL:
-        // Real robot, instantiate hardware IO implementations
-        drive =
-            new Drive(
-                new GyroIOPigeon2(),
-                new ModuleIOSpark(0),
-                new ModuleIOSpark(1),
-                new ModuleIOSpark(2),
-                new ModuleIOSpark(3));
-        //  exampleSubsystem = new ExampleSubsystem();
-        break;
-
-      case SIM:
-        // Sim robot, instantiate physics sim IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim());
-        //    exampleSubsystem = new ExampleSubsystem();
-        break;
-
-      default:
-        // Replayed robot, disable IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {});
-        // exampleSubsystem = new ExampleSubsystem();
-        break;
-    }
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-
-    // Set up SysId routines
-    autoChooser.addOption(
-        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
-    autoChooser.addOption(
-        "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Forward)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Reverse)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -132,77 +73,21 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    // Default command, normal field-relative drive
-    /*drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
 
-    // Lock to 0° when A button is held
-    controller
-        .a()
-        .onTrue(
-            DriveCommands.joystickDriveAtAngle(
-                drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
-                () -> Rotation2d.kZero));
+    m_driveSubsystem.setDefaultCommand(
 
-    // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+        // The left stick controls translation of the robot.
+        // Turning is controlled by the X axis of the right stick.
+        new RunCommand(
+            () -> {
+              m_driveSubsystem.drive(
+                  -MathUtil.applyDeadband(m_Joystick0.getY(), OIConstants.kDriveDeadband),
+                  -MathUtil.applyDeadband(m_Joystick0.getX(), OIConstants.kDriveDeadband),
+                  -MathUtil.applyDeadband(m_Joystick1.getX(), OIConstants.kDriveDeadband),
+                  true);
+            },
+            m_driveSubsystem));
 
-    // Reset gyro to 0° when B button is pressed
-    controller
-        .b()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
-                    drive)
-                .ignoringDisable(true));*/
-
-    // Configure default commands
-    /*drive.setDefaultCommand(
-    // The left stick controls translation of the robot.
-    // Turning is controlled by the X axis of the right stick.
-    new RunCommand(
-        () -> drive.drive(
-            -MathUtil.applyDeadband(m_Joystick0.getY() * 0.25, DriveConstants.kDriveDeadband),
-            -MathUtil.applyDeadband(m_Joystick0.getX() * 0.25, DriveConstants.kDriveDeadband),
-            -MathUtil.applyDeadband(m_Joystick1.getX(), DriveConstants.kDriveDeadband),
-            true),
-        drive));*/
-
-    /*   drive.setDefaultCommand(
-    DriveCommands.joystickDrive(
-        drive,
-        () -> -MathUtil.applyDeadband(m_Joystick0.getY() * 0.25, DriveConstants.kDriveDeadband),
-        () -> -MathUtil.applyDeadband(m_Joystick0.getX() * 0.25, DriveConstants.kDriveDeadband),
-        () -> -MathUtil.applyDeadband(m_Joystick1.getX(), DriveConstants.kDriveDeadband)));
-        */
-    // old sort of working code
-    /*drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            drive, () -> m_Joystick0.getY(), () -> m_Joystick0.getX(), () -> m_Joystick1.getX()));
-    */
-    boolean isRed = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
-    drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            drive,
-            () -> m_Joystick0.getY() * (isRed ? -1 : 1),
-            () -> m_Joystick0.getX() * (isRed ? -1 : 1),
-            () -> m_Joystick1.getX() * (isRed ? -1 : 1)));
-
-    /*new JoystickButton(m_Joystick1, 1)
-    .onTrue(
-        new RunCommand(() -> shooterSubsystem.setShooterSpeed(0.5), shooterSubsystem)
-            .andThen(new WaitCommand(0.5))
-            .andThen(
-                () -> shooterFeederSubsystem.setShooterFeederSpeed(0.5), shooterFeederSubsystem)
-            .andThen(() -> agitatorSubsystem.setAgitatorSpeed(0.5), agitatorSubsystem));*/
     new JoystickButton(m_Joystick1, 1)
         .onTrue(
             new ParallelCommandGroup(
@@ -304,44 +189,27 @@ public class RobotContainer {
             new RunCommand(
                 () -> shooterFeederSubsystem.setShooterFeederSpeed(0), shooterFeederSubsystem));
 
+    new JoystickButton(m_Joystick1, 8)
+        .toggleOnTrue(new InstantCommand(() -> m_driveSubsystem.zeroHeading(), m_driveSubsystem));
+
+    // new Joystick(m_Joystick0,9).toggleOnTrue(new InstantCommand(() ->
+    // m_driveSubsystem.setFieldOriented(!m_driveSubsystem.getFieldOriented()), m_driveSubsystem));
 
     // run auto for robot
+    // run auto for robot
     NamedCommands.registerCommand(
-            "Auto Shooting",
-            Commands.parallel(
-                shooterSubsystem.autoShooterCommand(),
-                agitatorSubsystem.autoAgitatorCommand()));
+        "Auto Shooting",
+        Commands.parallel(
+            shooterSubsystem.autoShooterCommand(), agitatorSubsystem.autoAgitatorCommand()));
 
     NamedCommands.registerCommand(
-            "Auto Intake",
-            Commands.sequence(
-                intakeSubsystem.autoIntakeCommand()));
-        
+        "Auto Intake", Commands.sequence(intakeSubsystem.autoIntakeCommand()));
+
     NamedCommands.registerCommand(
-            "Auto IntakePivot up",
-            Commands.sequence(
-                intakePivotSubsystem.autoIntakePivotUpCommand()
-        ));
+        "Auto IntakePivot up", Commands.sequence(intakePivotSubsystem.autoIntakePivotUpCommand()));
     NamedCommands.registerCommand(
-            "Auto IntakePivot down",
-            Commands.sequence(
-                intakePivotSubsystem.autoIntakePivotDownCommand()
-        ));
-
-            
-
-        
-        
-        
-           
-
-
-
-
-
-
-
-
+        "Auto IntakePivot down",
+        Commands.sequence(intakePivotSubsystem.autoIntakePivotDownCommand()));
 
     /*new JoystickButton(m_Joystick0, 1)
     .onTrue(new RunCommand(
