@@ -87,7 +87,7 @@ public class RobotContainer {
                   true);
             },
             m_driveSubsystem));
-
+    // SHOOT COMMAND
     new JoystickButton(m_Joystick1, 1)
         .onTrue(
             new ParallelCommandGroup(
@@ -123,13 +123,7 @@ public class RobotContainer {
                 new RunCommand(() -> agitatorSubsystem.setAgitatorSpeed(0), agitatorSubsystem),
                 new RunCommand(() -> rollersSubsystem.setRollersSpeed(0), rollersSubsystem)));
 
-    /*new JoystickButton(m_Joystick1, 1)
-    .onTrue(
-        new RunCommand(
-            () -> shooterSubsystem.setShooterSpeed(Constants.ShooterConstants.shooterSpeed),
-            shooterSubsystem))
-    .onFalse(new RunCommand(() -> shooterSubsystem.setShooterSpeed(0), shooterSubsystem));*/
-
+    // RUN INTAKE
     new JoystickButton(m_Joystick0, 1)
         .onTrue(
             new RunCommand(
@@ -137,25 +131,7 @@ public class RobotContainer {
                 intakeSubsystem))
         .onFalse(new RunCommand(() -> intakeSubsystem.setIntakeSpeed(0), intakeSubsystem));
 
-    /*new JoystickButton(m_Joystick0, 1)
-    .onTrue(
-        new RunCommand(
-                () ->
-                    shooterFeederSubsystem.setShooterFeederSpeed(
-                        Constants.ShooterFeederConstants.shooterFeederSpeed),
-                shooterFeederSubsystem)
-            .alongWith(
-                new RunCommand(
-                    () ->
-                        agitatorSubsystem.setAgitatorSpeed(
-                            -Constants.AgitatorConstants.agitatorSpeed))))
-    .onFalse(
-        new RunCommand(() -> agitatorSubsystem.setAgitatorSpeed(0), agitatorSubsystem)
-            .alongWith(
-                new RunCommand(
-                    () -> shooterFeederSubsystem.setShooterFeederSpeed(0),
-                    shooterFeederSubsystem)));*/
-
+    // PIVOT DOWN
     new JoystickButton(m_Joystick1, 5)
         .onTrue(
             new RunCommand(
@@ -166,7 +142,7 @@ public class RobotContainer {
         .onFalse(
             new RunCommand(
                 () -> intakePivotSubsystem.setIntakePivotSpeed(0), intakePivotSubsystem));
-
+    // PIVOT UP
     new JoystickButton(m_Joystick1, 3)
         .onTrue(
             new RunCommand(
@@ -178,29 +154,19 @@ public class RobotContainer {
             new RunCommand(
                 () -> intakePivotSubsystem.setIntakePivotSpeed(0), intakePivotSubsystem));
 
-    new JoystickButton(m_Joystick0, 5)
-        .onTrue(
-            new RunCommand(
-                () ->
-                    shooterFeederSubsystem.setShooterFeederSpeed(
-                        -Constants.ShooterFeederConstants.shooterFeederSpeed),
-                shooterFeederSubsystem))
-        .onFalse(
-            new RunCommand(
-                () -> shooterFeederSubsystem.setShooterFeederSpeed(0), shooterFeederSubsystem));
-
+    // ZERO HEADING
     new JoystickButton(m_Joystick1, 8)
         .toggleOnTrue(new InstantCommand(() -> m_driveSubsystem.zeroHeading(), m_driveSubsystem));
-
-    // new Joystick(m_Joystick0,9).toggleOnTrue(new InstantCommand(() ->
-    // m_driveSubsystem.setFieldOriented(!m_driveSubsystem.getFieldOriented()), m_driveSubsystem));
 
     // run auto for robot
     // run auto for robot
     NamedCommands.registerCommand(
         "Auto Shooting",
         Commands.parallel(
-            shooterSubsystem.autoShooterCommand(), agitatorSubsystem.autoAgitatorCommand()));
+            shooterSubsystem.autoShooterCommand(),
+            agitatorSubsystem.autoAgitatorCommand(),
+            shooterFeederSubsystem.autoShooterFeederCommand(),
+            rollersSubsystem.autoRollersCommand()));
 
     NamedCommands.registerCommand(
         "Auto Intake", Commands.sequence(intakeSubsystem.autoIntakeCommand()));
@@ -210,20 +176,6 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "Auto IntakePivot down",
         Commands.sequence(intakePivotSubsystem.autoIntakePivotDownCommand()));
-
-    /*new JoystickButton(m_Joystick0, 1)
-    .onTrue(new RunCommand(
-        () -> m_robotDrive.setX(),
-        m_robotDrive));
-
-    // Run example motor at set speed when Y button is held
-    /*controller
-        .y()
-        .onTrue(Commands.run(() -> exampleSubsystem.motor1.set(0.5), exampleSubsystem))
-        .onFalse(Commands.run(() -> exampleSubsystem.motor1.set(0), exampleSubsystem));
-
-    controller.x().onTrue(exampleSubsystem.testCommand());
-    controller.x().whileFalse(exampleSubsystem.testCommand2());*/
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

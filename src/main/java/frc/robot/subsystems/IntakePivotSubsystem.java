@@ -27,7 +27,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
     intakePivotMotor.set(speed);
   }
 
-  public Command autoIntakePivotUpCommand() {
+  public Command autoIntakePivotDownCommand() {
     return Commands.sequence(
         Commands.runOnce(
             () -> setIntakePivotSpeed(Constants.IntakePivotConstants.intakePivotSpeed)),
@@ -35,7 +35,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
         Commands.runOnce(() -> setIntakePivotSpeed(0)));
   }
 
-  public Command autoIntakePivotDownCommand() {
+  public Command autoIntakePivotUpCommand() {
     return Commands.sequence(
         Commands.runOnce(
             () -> setIntakePivotSpeed(-Constants.IntakePivotConstants.intakePivotSpeed)),
