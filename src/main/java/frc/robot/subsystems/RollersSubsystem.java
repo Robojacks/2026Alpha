@@ -5,10 +5,10 @@ import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class RollersSubsystem extends SubsystemBase {
   SparkFlex rollersMotor =
@@ -29,11 +29,8 @@ public class RollersSubsystem extends SubsystemBase {
   public Command autoRollersCommand() {
     return Commands.sequence(
         Commands.waitSeconds(0.5),
-        Commands.runOnce(
-          () -> setRollersSpeed(Constants.RollersConstants.rollersSpeed)),
+        Commands.runOnce(() -> setRollersSpeed(Constants.RollersConstants.rollersSpeed)),
         Commands.waitSeconds(5),
         Commands.runOnce(() -> setRollersSpeed(0)));
   }
-
-
 }

@@ -158,6 +158,22 @@ public class RobotContainer {
     new JoystickButton(m_Joystick1, 8)
         .toggleOnTrue(new InstantCommand(() -> m_driveSubsystem.zeroHeading(), m_driveSubsystem));
 
+    new JoystickButton(m_Joystick0, 4)
+    .onTrue(
+        new ParallelCommandGroup(
+            new RunCommand(
+                () -> rollersSubsystem.setRollersSpeed(Constants.RollersConstants.rollersSpeed), rollersSubsystem),
+            new RunCommand(
+                () -> shooterFeederSubsystem.setShooterFeederSpeed(Constants.ShooterFeederConstants.shooterFeederSpeed), shooterFeederSubsystem)
+            ))
+            .onFalse(
+                new ParallelCommandGroup(
+                    new RunCommand(
+                        () -> rollersSubsystem.setRollersSpeed(0), rollersSubsystem),
+                    new RunCommand(
+                        () ->shooterFeederSubsystem.setShooterFeederSpeed(0), shooterFeederSubsystem)
+            ));
+
     // run auto for robot
     // run auto for robot
     NamedCommands.registerCommand(
