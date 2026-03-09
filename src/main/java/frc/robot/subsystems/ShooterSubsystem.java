@@ -28,6 +28,8 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterMotor.set(speed);
   }
 
+  
+
   public Command autoShooterCommand() {
     return Commands.sequence(
         Commands.runOnce(() -> setShooterSpeed(Constants.ShooterConstants.shooterSpeed)),
