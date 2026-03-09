@@ -1,0 +1,56 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Auto Shooting"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Auto Intake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Auto IntakePivot down"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Right Speedy Pickup Path"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Auto IntakePivot up"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Auto Shooting"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.392459651387991,
+        "y": 1.4147127178825065
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.289205217265335,
+        "y": 1.111480903339973
+      },
+      "isLocked": false,
+      "linkedName": "cut time shoot R"
+    },
+    {
+      "anchor": {
+        "x": 0.28324725629438363,
+        "y": 0.8525952227243385
+      },
+      "prevControl": {
+        "x": 1.0620142027114268,
+        "y": 1.0985216268560374
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "r ball drop"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -179.1185960034182
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 66.00065883397069
+  },
+  "useDefaultConstraints": true
+}

@@ -59,11 +59,18 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
-    // Set up auto routines
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    NamedCommands.registerCommand("Auto Shooting", shooterSubsystem.autoShooterCommand());
+    NamedCommands.registerCommand("Auto Intake", intakeSubsystem.autoIntakeCommand());
+    NamedCommands.registerCommand(
+        "Auto IntakePivot up", intakePivotSubsystem.autoIntakePivotUpCommand());
+    NamedCommands.registerCommand(
+        "Auto IntakePivot down", intakePivotSubsystem.autoIntakePivotDownCommand());
 
-    // Configure the button bindings
+    // Configure the button bindings first so named commands are registered before building autos
     configureButtonBindings();
+
+    // Set up auto routines (build chooser after named commands are registered)
+    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
   }
 
   /**
@@ -73,6 +80,12 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+
+    // PID setponts
+
+    // new JoystickButton(m_Joystick0, 11).onTrue(intakePivotSubsystem.setOutCommand());
+
+    // new JoystickButton(m_Joystick0, 12).onTrue(intakePivotSubsystem.setStowCommand());
 
     m_driveSubsystem.setDefaultCommand(
 
@@ -94,21 +107,21 @@ public class RobotContainer {
                 new RunCommand(
                     () -> shooterSubsystem.setShooterSpeed(Constants.ShooterConstants.shooterSpeed),
                     shooterSubsystem),
-                new WaitCommand(0.5)
+                new WaitCommand(0.75)
                     .andThen(
                         new RunCommand(
                             () ->
                                 shooterFeederSubsystem.setShooterFeederSpeed(
                                     Constants.ShooterFeederConstants.shooterFeederSpeed),
                             shooterFeederSubsystem)),
-                new WaitCommand(0.5)
+                new WaitCommand(0.75)
                     .andThen(
                         new RunCommand(
                             () ->
                                 agitatorSubsystem.setAgitatorSpeed(
                                     Constants.AgitatorConstants.agitatorSpeed),
                             agitatorSubsystem)),
-                new WaitCommand(0.5)
+                new WaitCommand(0.75)
                     .andThen(
                         new RunCommand(
                             () ->

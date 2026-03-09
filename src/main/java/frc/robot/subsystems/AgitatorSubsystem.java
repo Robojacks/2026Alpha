@@ -28,7 +28,7 @@ public class AgitatorSubsystem extends SubsystemBase {
 
   public Command autoAgitatorCommand() {
     return Commands.sequence(
-        Commands.waitSeconds(0.5),
+        Commands.waitSeconds(0.75),
         Commands.runOnce(() -> setAgitatorSpeed(Constants.AgitatorConstants.agitatorSpeed)),
         Commands.waitSeconds(5),
         Commands.runOnce(() -> setAgitatorSpeed(0)));

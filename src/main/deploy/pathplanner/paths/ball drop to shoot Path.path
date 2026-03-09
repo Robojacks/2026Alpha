@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.28324725629438363,
+        "y": 0.8525952227243385
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.4543253712072302,
+        "y": 1.3268818592640423
+      },
+      "isLocked": false,
+      "linkedName": "r ball drop"
+    },
+    {
+      "anchor": {
+        "x": 3.2636410587475786,
+        "y": 1.812879276952874
+      },
+      "prevControl": {
+        "x": 1.926171001642353,
+        "y": 1.4510935566646985
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 66.00065883397069
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -179.1185960034182
+  },
+  "useDefaultConstraints": true
+}

@@ -9,6 +9,12 @@
           "data": {
             "name": "Auto Shooting"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L shoot and get ready for pick up Path"
+          }
         }
       ]
     }

@@ -29,7 +29,7 @@ public class ShooterFeederSubsystem extends SubsystemBase {
 
   public Command autoShooterFeederCommand() {
     return Commands.sequence(
-        Commands.waitSeconds(0.5),
+        Commands.waitSeconds(0.75),
         Commands.runOnce(
             () -> setShooterFeederSpeed(Constants.ShooterFeederConstants.shooterFeederSpeed)),
         Commands.waitSeconds(5),
