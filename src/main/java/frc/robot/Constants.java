@@ -33,6 +33,8 @@ public final class Constants {
   public static class ShooterConstants {
     public static final int shooterMotorCanId = 11;
 
+    public static final int shooterMotor2CanId = 16;
+
     public static final double shooterSpeed = 0.5;
     public static final double kP = 0.1;
     public static final double kI = 0.001;  
