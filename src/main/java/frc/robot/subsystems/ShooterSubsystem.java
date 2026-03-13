@@ -18,8 +18,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public SparkFlex shooterMotor = new SparkFlex(Constants.ShooterConstants.shooterMotorCanId,
       SparkFlex.MotorType.kBrushless);
+
   public SparkFlex shooterMotorFallower = new SparkFlex(Constants.ShooterConstants.shooterMotor2CanId,
       SparkFlex.MotorType.kBrushless);
+
   private PIDController pidController;
 
   
@@ -28,6 +30,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     shooterMotor1Config.smartCurrentLimit(50)
         .idleMode(IdleMode.kBrake);
+
     SparkFlexConfig shooterMotor2Config = new SparkFlexConfig();
     shooterMotor2Config.smartCurrentLimit(50)
         .idleMode(IdleMode.kBrake)
@@ -36,14 +39,20 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterMotor.configure(
         shooterMotor1Config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     // motor1.setIdleMode(SparkMax.IdleMode.kBrake);
-    shooterMotorFallower.configure(shooterMotor2Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+    shooterMotorFallower.configure(shooterMotor2Config, ResetMode.kResetSafeParameters,
+     PersistMode.kPersistParameters);
+
     // encoder = shooterMotor.getEncoder();
+
     pidController = new PIDController(ShooterConstants.kP, ShooterConstants.kI, ShooterConstants.kD);
     pidController.setTolerance(ShooterConstants.kShooterRpmTolerance);
+
   }
 
   public void setShooterSpeed(double speed) {
     shooterMotor.set(speed);
+
   }
 
   /*
@@ -70,6 +79,7 @@ public class ShooterSubsystem extends SubsystemBase {
     // target RPM.
     double output = pidController.calculate(currentRpm, rpm);
     setShooterSpeed(output);
+    
   }
 
   public Command autoShooterCommand() {
