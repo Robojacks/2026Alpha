@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
-import frc.robot.subsystems.AgitatorSubsystem;
+// import frc.robot.subsystems.AgitatorSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakePivotSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -45,7 +45,7 @@ public class RobotContainer {
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final IntakePivotSubsystem intakePivotSubsystem = new IntakePivotSubsystem();
   private final ShooterFeederSubsystem shooterFeederSubsystem = new ShooterFeederSubsystem();
-  private final AgitatorSubsystem agitatorSubsystem = new AgitatorSubsystem();
+  //   private final AgitatorSubsystem agitatorSubsystem = new AgitatorSubsystem();
   private final RollersSubsystem rollersSubsystem = new RollersSubsystem();
 
   // Controller
@@ -58,7 +58,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-
+    NamedCommands.registerCommand("Auto Shooting Long", shooterSubsystem.autoShooterLongCommand());
     NamedCommands.registerCommand("Auto Shooting", shooterSubsystem.autoShooterCommand());
     NamedCommands.registerCommand("Auto Intake", intakeSubsystem.autoIntakeCommand());
     NamedCommands.registerCommand(
@@ -105,7 +105,9 @@ public class RobotContainer {
         .onTrue(
             new ParallelCommandGroup(
                 new RunCommand(
-                    () -> shooterSubsystem.setShooterSpeed(Constants.ShooterConstants.shooterSpeed),
+                    () ->
+                        shooterSubsystem.setShooterSpeed(
+                            Constants.ShooterConstants.shooterSpeedPercent),
                     shooterSubsystem),
                 new WaitCommand(0.75)
                     .andThen(
@@ -114,14 +116,7 @@ public class RobotContainer {
                                 shooterFeederSubsystem.setShooterFeederSpeed(
                                     Constants.ShooterFeederConstants.shooterFeederSpeed),
                             shooterFeederSubsystem)),
-                new WaitCommand(0.75)
-                    .andThen(
-                        new RunCommand(
-                            () ->
-                                agitatorSubsystem.setAgitatorSpeed(
-                                    Constants.AgitatorConstants.agitatorSpeed),
-                            agitatorSubsystem)),
-                new WaitCommand(0.75)
+                new WaitCommand(1.5)
                     .andThen(
                         new RunCommand(
                             () ->
@@ -133,7 +128,7 @@ public class RobotContainer {
                 new RunCommand(
                     () -> shooterFeederSubsystem.setShooterFeederSpeed(0), shooterFeederSubsystem),
                 new RunCommand(() -> shooterSubsystem.setShooterSpeed(0), shooterSubsystem),
-                new RunCommand(() -> agitatorSubsystem.setAgitatorSpeed(0), agitatorSubsystem),
+                // new RunCommand(() -> agitatorSubsystem.setAgitatorSpeed(0), agitatorSubsystem)
                 new RunCommand(() -> rollersSubsystem.setRollersSpeed(0), rollersSubsystem)));
 
     // RUN INTAKE
@@ -190,15 +185,38 @@ public class RobotContainer {
                     () -> shooterFeederSubsystem.setShooterFeederSpeed(0),
                     shooterFeederSubsystem)));
 
+    // PID bution
+
+    new JoystickButton(m_Joystick1, 12)
+        .onTrue(
+            new RunCommand(
+                () -> shooterSubsystem.setPIDSpeed(Constants.ShooterConstants.shooterTargetRpm),
+                shooterSubsystem))
+        .onFalse(
+            new RunCommand(
+                () -> shooterSubsystem.setPIDSpeed(Constants.ShooterConstants.shooterIdleRpm),
+                shooterSubsystem));
+
+    new JoystickButton(m_Joystick1, 11)
+        .onTrue(new InstantCommand(() -> shooterSubsystem.stopShooterCommand(), shooterSubsystem));
+
     // run auto for robot
     // run auto for robot
     NamedCommands.registerCommand(
         "Auto Shooting",
         Commands.parallel(
             shooterSubsystem.autoShooterCommand(),
-            agitatorSubsystem.autoAgitatorCommand(),
+            // agitatorSubsystem.autoAgitatorCommand(),
             shooterFeederSubsystem.autoShooterFeederCommand(),
             rollersSubsystem.autoRollersCommand()));
+
+    NamedCommands.registerCommand(
+        "Auto Shooting Long",
+        Commands.parallel(
+            shooterSubsystem.autoShooterLongCommand(),
+            // agitatorSubsystem.autoAgitatorCommand(),
+            shooterFeederSubsystem.autoShooterFeederLongCommand(),
+            rollersSubsystem.autoRollersLongCommand()));
 
     NamedCommands.registerCommand(
         "Auto Intake", Commands.sequence(intakeSubsystem.autoIntakeCommand()));

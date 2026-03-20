@@ -35,17 +35,19 @@ public final class Constants {
 
     public static final int shooterMotor2CanId = 16;
 
-    public static final double shooterSpeed = 0.5;
-    public static final double kP = 0.1;
-    public static final double kI = 0.001;  
-    public static final double kD = 0.01;
-    public static final double kShooterRpmTolerance = 50;
+    public static final double shooterSpeedPercent = 0.45;
+    public static final int shooterTargetRpm = 2800;
+    public static final int shooterIdleRpm = 1000;
+    public static final double kP = 0.001;
+    public static final double kI = 0.000;
+    public static final double kD = 0.000;
+    public static final double kShooterRpmTolerance = 60;
   }
 
   public static class ShooterFeederConstants {
     public static final int shooterFeederMotorCanId = 12;
 
-    public static final double shooterFeederSpeed = 0.65;
+    public static final double shooterFeederSpeed = 1;
   }
 
   public static class AgitatorConstants {

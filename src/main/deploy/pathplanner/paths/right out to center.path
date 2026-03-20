@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.392459651387991,
-        "y": 1.4147127178825065
+        "x": 3.5450383480825955,
+        "y": 1.9828790560471976
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.000800560478901,
-        "y": 0.9818263542461421
+        "x": 3.1533792571735053,
+        "y": 1.5499926924108332
       },
       "isLocked": false,
       "linkedName": "cut time shoot R"
@@ -55,7 +55,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 66.00065883397069
+    "rotation": 0.7252242990593512
   },
   "useDefaultConstraints": true
 }

@@ -43,10 +43,12 @@
 //         .idleMode(IdleMode.kCoast)
 //         .smartCurrentLimit((int) ShooterConstants.kShooterCurrentLimitAmps);
 
-//     m_leader.configure(leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+//     m_leader.configure(leaderConfig, ResetMode.kResetSafeParameters,
+// PersistMode.kPersistParameters);
 
 //     m_encoder = m_leader.getEncoder();
-//     m_pidController = new PIDController(ShooterConstants.kP, ShooterConstants.kI, ShooterConstants.kD);
+//     m_pidController = new PIDController(ShooterConstants.kP, ShooterConstants.kI,
+// ShooterConstants.kD);
 //     m_pidController.setTolerance(ShooterConstants.kShooterRpmTolerance);
 //   }
 

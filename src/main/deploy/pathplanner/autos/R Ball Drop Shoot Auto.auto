@@ -5,12 +5,6 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "Auto Shooting"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -48,13 +42,32 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Auto Shooting"
+                  "name": "Auto Shooting Long"
                 }
               },
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "Auto IntakePivot up"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Auto IntakePivot up"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Auto IntakePivot down"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Auto IntakePivot up"
+                      }
+                    }
+                  ]
                 }
               }
             ]

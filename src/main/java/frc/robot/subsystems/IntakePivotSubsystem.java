@@ -44,6 +44,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
 
   public Command autoIntakePivotUpCommand() {
     return Commands.sequence(
+        Commands.waitSeconds(2.5),
         Commands.runOnce(
             () -> setIntakePivotSpeed(-Constants.IntakePivotConstants.intakePivotSpeed)),
         Commands.waitSeconds(1.15),
