@@ -38,7 +38,7 @@ public class RollersSubsystem extends SubsystemBase {
     return Commands.sequence(
         Commands.waitSeconds(0.75),
         Commands.runOnce(() -> setRollersSpeed(Constants.RollersConstants.rollersSpeed)),
-        Commands.waitSeconds(14),
+        Commands.waitSeconds(12),
         Commands.runOnce(() -> setRollersSpeed(0)));
   }
 }

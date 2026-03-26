@@ -165,10 +165,15 @@ public class RobotContainer {
     // ZERO HEADING
     new JoystickButton(m_Joystick1, 8)
         .toggleOnTrue(new InstantCommand(() -> m_driveSubsystem.zeroHeading(), m_driveSubsystem));
-
+    // UNJAMING
     new JoystickButton(m_Joystick0, 4)
         .onTrue(
             new ParallelCommandGroup(
+                new RunCommand(
+                    () ->
+                        shooterSubsystem.setShooterSpeed(
+                            -Constants.ShooterConstants.shooterSpeedPercent),
+                    shooterSubsystem),
                 new RunCommand(
                     () ->
                         rollersSubsystem.setRollersSpeed(-Constants.RollersConstants.rollersSpeed),
@@ -180,6 +185,7 @@ public class RobotContainer {
                     shooterFeederSubsystem)))
         .onFalse(
             new ParallelCommandGroup(
+                new RunCommand(() -> shooterSubsystem.setShooterSpeed(0), shooterSubsystem),
                 new RunCommand(() -> rollersSubsystem.setRollersSpeed(0), rollersSubsystem),
                 new RunCommand(
                     () -> shooterFeederSubsystem.setShooterFeederSpeed(0),
