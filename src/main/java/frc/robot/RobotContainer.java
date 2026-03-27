@@ -25,6 +25,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakePivotSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.PhotonVisionSubsystem;
 import frc.robot.subsystems.RollersSubsystem;
 import frc.robot.subsystems.ShooterFeederSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -40,6 +41,8 @@ public class RobotContainer {
 
   // Subsystems
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
+  private final PhotonVisionSubsystem m_photonVisionSubsystem =
+      new PhotonVisionSubsystem(m_driveSubsystem);
   // private final ExampleSubsystem exampleSubsystem;
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
@@ -86,9 +89,8 @@ public class RobotContainer {
     // new JoystickButton(m_Joystick0, 11).onTrue(intakePivotSubsystem.setOutCommand());
 
     // new JoystickButton(m_Joystick0, 12).onTrue(intakePivotSubsystem.setStowCommand());
-
+    m_photonVisionSubsystem.setDefaultCommand(new RunCommand(() -> {}, m_photonVisionSubsystem));
     m_driveSubsystem.setDefaultCommand(
-
         // The left stick controls translation of the robot.
         // Turning is controlled by the X axis of the right stick.
         new RunCommand(
