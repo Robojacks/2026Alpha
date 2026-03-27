@@ -130,7 +130,6 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public Pose2d getPose() {
     return m_odometry.getPoseMeters();
-    m_odometry.
   }
 
   /**
