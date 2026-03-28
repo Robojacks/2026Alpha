@@ -35,7 +35,7 @@ public final class Constants {
 
     public static final int shooterMotor2CanId = 16;
 
-    public static final double shooterSpeedPercent = 0.45;
+    public static final double shooterSpeedPercent = 0.6; // .45 changed by william
     public static final int shooterTargetRpm = 2800;
     public static final int shooterIdleRpm = 1000;
     public static final double kP = 0.001;
