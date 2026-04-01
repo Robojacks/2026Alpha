@@ -41,12 +41,17 @@ public final class Constants {
 
     public static final int shooterMotor2CanId = 16;
 
-    public static final double shooterSpeedPercent = 0.6; // .45 changed by william
+    public static final double shooterSpeedPercent = 0.45; // .45 changed by william
     public static final int shooterTargetRpm = 2800;
     public static final int shooterIdleRpm = 1000;
-    public static final double kP = 0.001;
+    public static final double kP = 0.00045;
     public static final double kI = 0.000;
-    public static final double kD = 0.000;
+    public static final double kD = 0.0000;
+
+    public static final double kS = 0.1;
+    public static final double kV = 0.0001;
+    public static final double kA = 0.00001;
+
     public static final double kShooterRpmTolerance = 60;
   }
 
@@ -187,6 +192,13 @@ public final class Constants {
   public static final class VisionConstants {
 
     public static final String LIMELIGHT_NAME = "swerve-limelight";
+
+    public static final double MountPostitionForward = Units.inchesToMeters(2.5);
+    public static final double MountPositionSide = 0.0;
+    public static final double MountPositionUp = Units.inchesToMeters(20.5);
+    public static final double MountPositionRoll = 0;
+    public static final double MountPositionPitch = 30;
+    public static final double MountPositionYaw = 0;
 
     public static final Transform3d ROBOT_TO_CAMERA =
         new Transform3d(
