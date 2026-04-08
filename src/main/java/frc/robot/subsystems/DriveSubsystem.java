@@ -25,6 +25,8 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
@@ -83,6 +85,9 @@ public class DriveSubsystem extends SubsystemBase {
           },
           Pose2d.kZero);
 
+  // Field2d object published to SmartDashboard to visualize robot pose and paths.
+  private final Field2d m_field2d = new Field2d();
+
   private final RobotConfig m_robotConfig;
 
   /** Creates a new DriveSubsystem. */
@@ -92,6 +97,10 @@ public class DriveSubsystem extends SubsystemBase {
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_MaxSwerve);
 
     m_robotConfig = AutoConstants.kPPConfig;
+
+    // Publish the Field2d to SmartDashboard so dashboards (Shuffleboard/SmartDashboard)
+    // can display the robot pose. Key: "Field"
+    SmartDashboard.putData("Field", m_field2d);
 
     AutoBuilder.configure(
         this::getPose,
@@ -150,6 +159,13 @@ public class DriveSubsystem extends SubsystemBase {
           m_rearLeft.getPosition(),
           m_rearRight.getPosition()
         });
+
+    // Update the Field2d with the latest estimated robot pose so the dashboard shows live pose
+    try {
+      m_field2d.setRobotPose(getPose());
+    } catch (Exception ignored) {
+      // Defensive: don't let dashboard updates crash the robot code.
+    }
   }
   /* Update odometry from advantage kit
   double[] sampleTimestamps =

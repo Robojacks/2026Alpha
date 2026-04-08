@@ -10,6 +10,8 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -21,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.TurnToTargetCommand;
 // import frc.robot.subsystems.AgitatorSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakePivotSubsystem;
@@ -54,6 +57,7 @@ public class RobotContainer {
   // private final CommandXboxController controller = new CommandXboxController(0);
   private final Joystick m_Joystick0 = new Joystick((OIConstants.kDriverControllerPort));
   private final Joystick m_Joystick1 = new Joystick((OIConstants.kOperatorControllerPort));
+  private final Translation2d m_fixedTarget;
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -68,6 +72,12 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "Auto IntakePivot down", intakePivotSubsystem.autoIntakePivotDownCommand());
 
+    if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+      m_fixedTarget =
+          new Translation2d(469.5, 158.32); // Replace with actual red target coordinates
+    } else {
+      m_fixedTarget = new Translation2d(181.55, 158.32);
+    }
     // Configure the button bindings first so named commands are registered before building autos
     configureButtonBindings();
 
@@ -167,6 +177,12 @@ public class RobotContainer {
     // ZERO HEADING
     new JoystickButton(m_Joystick1, 8)
         .toggleOnTrue(new InstantCommand(() -> m_driveSubsystem.zeroHeading(), m_driveSubsystem));
+
+    // Auto Aim
+    new JoystickButton(m_Joystick1, 10)
+        .whileTrue(new TurnToTargetCommand(m_driveSubsystem, m_fixedTarget));
+    // .onFalse(new InstantCommand(() -> m_driveSubsystem.stop(), m_driveSubsystem));
+
     // UNJAMING
     new JoystickButton(m_Joystick0, 4)
         .onTrue(
@@ -208,7 +224,8 @@ public class RobotContainer {
     new JoystickButton(m_Joystick1, 11)
         .onTrue(new InstantCommand(() -> shooterSubsystem.stopShooterCommand(), shooterSubsystem));
 
-    // run auto for robot
+
+        // run auto for robot
     // run auto for robot
     NamedCommands.registerCommand(
         "Auto Shooting",

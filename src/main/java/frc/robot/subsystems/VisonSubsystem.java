@@ -7,6 +7,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.util.LimelightHelpers;
@@ -17,6 +19,7 @@ public class VisonSubsystem extends SubsystemBase {
   // private static final Translation2d BLUE_HUB   = new Translation2d(4.625594, 4.02);
   private static final double FIELD_LENGTH = 16.54;
   private static final double FIELD_WIDTH = 8.21;
+  private static Field2d field2d;
 
   public VisonSubsystem(DriveSubsystem driveSubsystem) {
     // Constructor code here, if needed
@@ -120,6 +123,10 @@ public class VisonSubsystem extends SubsystemBase {
       Matrix<N3, N1> visionMeasurementStdDevs) {
     driveSubsystem.addVisionMeasurement(
         visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
+
+    SmartDashboard.putNumber("vision pose x", visionRobotPoseMeters.getX());
+    SmartDashboard.putNumber("vision pose y", visionRobotPoseMeters.getY());
+    SmartDashboard.putNumber("vision pose rot", visionRobotPoseMeters.getRotation().getDegrees());
   }
 
   // Vision processing methods here, if needed
