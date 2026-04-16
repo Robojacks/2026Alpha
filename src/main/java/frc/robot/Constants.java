@@ -32,8 +32,9 @@ public final class Constants {
 
   public static class IntakePivotConstants {
     public static final int intakePivotMotorCanId = 13;
+    public static final int intakePivotMotorCurrentLimitAmps = 25;
 
-    public static final double intakePivotSpeed = 0.2;
+    public static final double intakePivotSpeed = -0.2;
   }
 
   public static class ShooterConstants {
@@ -58,7 +59,7 @@ public final class Constants {
   public static class ShooterFeederConstants {
     public static final int shooterFeederMotorCanId = 12;
 
-    public static final double shooterFeederSpeed = 1;
+    public static final double shooterFeederSpeed = .75;
   }
 
   public static class AgitatorConstants {
@@ -191,7 +192,7 @@ public final class Constants {
 
   public static final class VisionConstants {
 
-    public static final String LIMELIGHT_NAME = "swerve-limelight";
+    public static final String LIMELIGHT_NAME = "limelight-swerve";
 
     public static final double MountPostitionForward = Units.inchesToMeters(2.5);
     public static final double MountPositionSide = 0.0;
@@ -217,7 +218,6 @@ public final class Constants {
 
     public static final double DISTANCE_TOLERANCE = 0.1;
     public static final double ANGLE_TOLERANCE = 2.0;
-    public static final String LEFT = "";
     public static final String RIGHT = "limelight-right";
   }
 }

@@ -31,6 +31,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.RollersSubsystem;
 import frc.robot.subsystems.ShooterFeederSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.VisonSubsystem;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -43,6 +44,7 @@ public class RobotContainer {
 
   // Subsystems
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
+  private final VisonSubsystem m_visionSubsystem = new VisonSubsystem(m_driveSubsystem);
   // private final PhotonVisionSubsystem m_photonVisionSubsystem =
   // new PhotonVisionSubsystem(m_driveSubsystem);
   // private final ExampleSubsystem exampleSubsystem;
@@ -78,6 +80,9 @@ public class RobotContainer {
     } else {
       m_fixedTarget = new Translation2d(181.55, 158.32);
     }
+
+    m_visionSubsystem.dummyMethod(); // Call a dummy method to prevent unused variable warning
+
     // Configure the button bindings first so named commands are registered before building autos
     configureButtonBindings();
 
@@ -224,8 +229,7 @@ public class RobotContainer {
     new JoystickButton(m_Joystick1, 11)
         .onTrue(new InstantCommand(() -> shooterSubsystem.stopShooterCommand(), shooterSubsystem));
 
-
-        // run auto for robot
+    // run auto for robot
     // run auto for robot
     NamedCommands.registerCommand(
         "Auto Shooting",

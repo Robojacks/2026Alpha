@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.Utils;
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
@@ -19,13 +18,15 @@ public class VisonSubsystem extends SubsystemBase {
   // private static final Translation2d BLUE_HUB   = new Translation2d(4.625594, 4.02);
   private static final double FIELD_LENGTH = 16.54;
   private static final double FIELD_WIDTH = 8.21;
-  private static Field2d field2d;
+  public static final Field2d visionField2d = new Field2d();
 
   public VisonSubsystem(DriveSubsystem driveSubsystem) {
     // Constructor code here, if needed
+    this.driveSubsystem = driveSubsystem;
+    SmartDashboard.putData("VisionField", visionField2d);
 
     LimelightHelpers.setCameraPose_RobotSpace(
-        VisionConstants.LEFT,
+        VisionConstants.LIMELIGHT_NAME,
         VisionConstants.MountPostitionForward,
         VisionConstants.MountPositionSide,
         VisionConstants.MountPositionUp,
@@ -34,17 +35,21 @@ public class VisonSubsystem extends SubsystemBase {
         VisionConstants.MountPositionYaw);
   }
 
+  // dummy method to do nothing so we don't have an unused variable in robotContainer
+  public void dummyMethod() {}
+
   @Override
   public void periodic() {
     // Reject if spinning too fast
     // if (Math.abs(omegaRps) >= 2.0) return;
 
     LimelightHelpers.SetRobotOrientation(
-        VisionConstants.LEFT, driveSubsystem.getPose().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+        VisionConstants.LIMELIGHT_NAME, driveSubsystem.getHeading(), 0, 0, 0, 0, 0);
     // LimelightHelpers.SetRobotOrientation(VisionConstants.RIGHT, headingDeg, 0, 0, 0, 0, 0);
 
     var measurementLeft =
-        LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(VisionConstants.LEFT);
+        LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(VisionConstants.LIMELIGHT_NAME);
+    // LimelightHelpers.getBotPoseEstimate_wpiBlue(VisionConstants.LIMELIGHT_NAME);
     // var measurementRight =
     // LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(VisionConstants.RIGHT);
 
@@ -69,23 +74,39 @@ public class VisonSubsystem extends SubsystemBase {
         double timestamp = Math.min(measurementLeft.timestampSeconds, measurementRight.timestampSeconds);
         addVisionMeasurement(new Pose2d(x, y, currentRotation), timestamp);
     } else */ if (!rejectLeft) {
-      double xyStdDev = computeSyStdDev(measurementLeft.avgTagArea, measurementLeft.tagCount);
+      System.out.println("XXXXXXXX  Vision Pose Accepted! XXXXXXXXXXXXXXXXXXX");
+      System.out.println(
+          "Robot X=" + measurementLeft.pose.getX() + ", Robot Y=" + measurementLeft.pose.getY());
+      visionField2d.setRobotPose(measurementLeft.pose);
+      /*double xyStdDev = computeSyStdDev(measurementLeft.avgTagArea, measurementLeft.tagCount);
       addVisionMeasurement(
           new Pose2d(measurementLeft.pose.getX(), measurementLeft.pose.getY(), currentRotation),
           measurementLeft.timestampSeconds,
-          VecBuilder.fill(xyStdDev, xyStdDev, 9999999.0));
-    } /*else if (!rejectRight) {
-          addVisionMeasurement(
-              new Pose2d(measurementRight.pose.getX(), measurementRight.pose.getY(), currentRotation),
-              measurementRight.timestampSeconds);
-      }*/
+          VecBuilder.fill(xyStdDev, xyStdDev, 9999999.0));*/
+      // addVisionMeasurement(measurementLeft.pose, xyStdDev,
+      // VecBuilder.fill(xyStdDev,xyStdDev,9999999.0));
+    } else {
+      System.out.println("Rejecting left measurement");
+      // visionField2d.setRobotPose(new Pose2d(0, 0, new Rotation2d()));
+    }
+    /*else if (!rejectRight) {
+        addVisionMeasurement(
+            new Pose2d(measurementRight.pose.getX(), measurementRight.pose.getY(), currentRotation),
+            measurementRight.timestampSeconds);
+    }*/
   }
 
   /** Returns true if the measurement should be rejected. */
   private boolean shouldRejectPose(LimelightHelpers.PoseEstimate measurement) {
-    if (measurement == null) return true;
-    if (measurement.tagCount == 0) return true;
-    if (measurement.tagCount == 1 && measurement.avgTagArea < 0.05) return true;
+    if (measurement == null) {
+      System.out.println("camera measurement is null");
+      return true;
+    }
+    if (measurement.tagCount == 0) {
+      System.out.println("tag count is 0");
+      return true;
+    }
+    // if (measurement.tagCount == 1 && measurement.avgTagArea < 0.05) return true;
     if (measurement.pose.getX() < 0.0 || measurement.pose.getX() > FIELD_LENGTH) return true;
     if (measurement.pose.getY() < 0.0 || measurement.pose.getY() > FIELD_WIDTH) return true;
     if (measurement.pose.getX() == 0 && measurement.pose.getY() == 0) return true;
@@ -123,10 +144,6 @@ public class VisonSubsystem extends SubsystemBase {
       Matrix<N3, N1> visionMeasurementStdDevs) {
     driveSubsystem.addVisionMeasurement(
         visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
-
-    SmartDashboard.putNumber("vision pose x", visionRobotPoseMeters.getX());
-    SmartDashboard.putNumber("vision pose y", visionRobotPoseMeters.getY());
-    SmartDashboard.putNumber("vision pose rot", visionRobotPoseMeters.getRotation().getDegrees());
   }
 
   // Vision processing methods here, if needed
