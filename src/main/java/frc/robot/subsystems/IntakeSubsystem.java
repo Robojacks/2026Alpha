@@ -28,9 +28,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public Command autoIntakeCommand() {
     return Commands.sequence(
-        Commands.waitSeconds(2),
+        // Commands.waitSeconds(2),
         Commands.runOnce(() -> setIntakeSpeed(Constants.IntakeConstants.intakeSpeed)),
-        Commands.waitSeconds(15),
+        Commands.waitSeconds(7),
         Commands.runOnce(() -> setIntakeSpeed(0)));
   }
 }

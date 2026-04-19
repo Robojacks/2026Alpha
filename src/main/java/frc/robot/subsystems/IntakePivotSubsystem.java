@@ -48,7 +48,7 @@ public class IntakePivotSubsystem extends SubsystemBase {
         Commands.waitSeconds(2.5),
         Commands.runOnce(
             () -> setIntakePivotSpeed(-Constants.IntakePivotConstants.intakePivotSpeed)),
-        Commands.waitSeconds(1.15),
+        Commands.waitSeconds(2.5),
         Commands.runOnce(() -> setIntakePivotSpeed(0)));
   }
 

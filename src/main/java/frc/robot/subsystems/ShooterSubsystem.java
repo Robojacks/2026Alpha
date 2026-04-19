@@ -111,7 +111,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command autoShooterLongCommand() {
     return Commands.sequence(
         Commands.runOnce(() -> setShooterSpeed(Constants.ShooterConstants.shooterSpeedPercent)),
-        Commands.waitSeconds(10),
+        Commands.waitSeconds(8),
         Commands.runOnce(() -> setShooterSpeed(0)));
   }
 

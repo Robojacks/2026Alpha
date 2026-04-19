@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -43,7 +44,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
 
   // Subsystems
-  private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
+  public final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
   private final VisonSubsystem m_visionSubsystem = new VisonSubsystem(m_driveSubsystem);
   // private final PhotonVisionSubsystem m_photonVisionSubsystem =
   // new PhotonVisionSubsystem(m_driveSubsystem);
@@ -76,9 +77,11 @@ public class RobotContainer {
 
     if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
       m_fixedTarget =
-          new Translation2d(469.5, 158.32); // Replace with actual red target coordinates
+          new Translation2d(
+              Units.inchesToMeters(469.5),
+              Units.inchesToMeters(158.32)); // Replace with actual red target coordinates
     } else {
-      m_fixedTarget = new Translation2d(181.55, 158.32);
+      m_fixedTarget = new Translation2d(Units.inchesToMeters(181.55), Units.inchesToMeters(158.32));
     }
 
     m_visionSubsystem.dummyMethod(); // Call a dummy method to prevent unused variable warning

@@ -3,42 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5450383480825955,
-        "y": 1.6725191740412981
+        "x": 3.6253038348082596,
+        "y": 2.871150442477876
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.1533792571735053,
-        "y": 1.2396328104049337
+        "x": 3.0848495575221246,
+        "y": 2.410961651917404
       },
       "isLocked": false,
-      "linkedName": "cut time shoot R"
+      "linkedName": "R shoot After middle pick up"
     },
     {
       "anchor": {
-        "x": 3.765920454545454,
-        "y": 0.6646704545454554
+        "x": 0.061516224188790325,
+        "y": 0.6665250737463122
       },
       "prevControl": {
-        "x": 2.5291022727272723,
-        "y": 0.7162045454545456
+        "x": 0.6447787610566743,
+        "y": 0.8912684365782082
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "end of right out to center"
+      "linkedName": "r ball drop"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -49,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 176.71075732150823
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.7252242990593512
+    "rotation": 66.55193742204219
   },
   "useDefaultConstraints": true
 }

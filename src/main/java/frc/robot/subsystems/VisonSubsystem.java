@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.Utils;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
@@ -48,7 +49,7 @@ public class VisonSubsystem extends SubsystemBase {
     // LimelightHelpers.SetRobotOrientation(VisionConstants.RIGHT, headingDeg, 0, 0, 0, 0, 0);
 
     var measurementLeft =
-        LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(VisionConstants.LIMELIGHT_NAME);
+        LimelightHelpers.getBotPoseEstimate_wpiBlue(VisionConstants.LIMELIGHT_NAME);
     // LimelightHelpers.getBotPoseEstimate_wpiBlue(VisionConstants.LIMELIGHT_NAME);
     // var measurementRight =
     // LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(VisionConstants.RIGHT);
@@ -78,11 +79,11 @@ public class VisonSubsystem extends SubsystemBase {
       System.out.println(
           "Robot X=" + measurementLeft.pose.getX() + ", Robot Y=" + measurementLeft.pose.getY());
       visionField2d.setRobotPose(measurementLeft.pose);
-      /*double xyStdDev = computeSyStdDev(measurementLeft.avgTagArea, measurementLeft.tagCount);
+      double xyStdDev = computeSyStdDev(measurementLeft.avgTagArea, measurementLeft.tagCount);
       addVisionMeasurement(
           new Pose2d(measurementLeft.pose.getX(), measurementLeft.pose.getY(), currentRotation),
           measurementLeft.timestampSeconds,
-          VecBuilder.fill(xyStdDev, xyStdDev, 9999999.0));*/
+          VecBuilder.fill(xyStdDev, xyStdDev, 9999999.0));
       // addVisionMeasurement(measurementLeft.pose, xyStdDev,
       // VecBuilder.fill(xyStdDev,xyStdDev,9999999.0));
     } else {
