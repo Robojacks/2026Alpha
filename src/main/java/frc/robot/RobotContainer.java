@@ -60,7 +60,7 @@ public class RobotContainer {
   // private final Joystick m_Joystick1 = new Joystick((OIConstants.kOperatorControllerPort));
   private final Translation2d m_fixedTarget;
 
-  private final CommandXboxController theController =
+  private final CommandXboxController driverController =
       new CommandXboxController((OIConstants.kDriverControllerPort));
   private final CommandXboxController operatorController =
       new CommandXboxController((OIConstants.kOperatorControllerPort));
@@ -117,9 +117,9 @@ public class RobotContainer {
         new RunCommand(
             () -> {
               m_driveSubsystem.drive(
-                  -MathUtil.applyDeadband(theController.getLeftY(), OIConstants.kDriveDeadband),
-                  -MathUtil.applyDeadband(theController.getLeftX(), OIConstants.kDriveDeadband),
-                  -MathUtil.applyDeadband(theController.getRightX(), OIConstants.kDriveDeadband),
+                  -MathUtil.applyDeadband(driverController.getLeftY(), OIConstants.kDriveDeadband),
+                  -MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband),
+                  -MathUtil.applyDeadband(driverController.getRightX(), OIConstants.kDriveDeadband),
                   true);
             },
             m_driveSubsystem));
@@ -152,6 +152,33 @@ public class RobotContainer {
                     () -> shooterFeederSubsystem.setShooterFeederSpeed(0), shooterFeederSubsystem),
                 new RunCommand(() -> shooterSubsystem.setShooterSpeed(0), shooterSubsystem),
                 // new RunCommand(() -> agitatorSubsystem.setAgitatorSpeed(0), agitatorSubsystem)
+                new RunCommand(() -> rollersSubsystem.setRollersSpeed(0), rollersSubsystem)));
+
+    // HIGH RPM SHOOT COMMAND
+    operatorController
+        .rightBumper()
+        .whileTrue(
+            new ParallelCommandGroup(
+                new RunCommand(() -> shooterSubsystem.setPIDSpeed(3900), shooterSubsystem),
+                new WaitCommand(0.75)
+                    .andThen(
+                        new RunCommand(
+                            () ->
+                                shooterFeederSubsystem.setShooterFeederSpeed(
+                                    Constants.ShooterFeederConstants.shooterFeederSpeed),
+                            shooterFeederSubsystem)),
+                new WaitCommand(1.5)
+                    .andThen(
+                        new RunCommand(
+                            () ->
+                                rollersSubsystem.setRollersSpeed(
+                                    Constants.RollersConstants.rollersSpeed),
+                            rollersSubsystem))))
+        .whileFalse(
+            new ParallelCommandGroup(
+                new RunCommand(
+                    () -> shooterFeederSubsystem.setShooterFeederSpeed(0), shooterFeederSubsystem),
+                new RunCommand(() -> shooterSubsystem.setShooterSpeed(0), shooterSubsystem),
                 new RunCommand(() -> rollersSubsystem.setRollersSpeed(0), rollersSubsystem)));
 
     // RUN INTAKE
@@ -190,10 +217,10 @@ public class RobotContainer {
                 () -> intakePivotSubsystem.setIntakePivotSpeed(0), intakePivotSubsystem));
 
     // DEFENSE X-LOCK (hold X to lock swerve modules in an X pattern)
-    theController.x().whileTrue(new RunCommand(() -> m_driveSubsystem.setX(), m_driveSubsystem));
+    driverController.x().whileTrue(new RunCommand(() -> m_driveSubsystem.setX(), m_driveSubsystem));
 
     // ZERO HEADING
-    theController
+    driverController
         .start()
         .whileTrue(new InstantCommand(() -> m_driveSubsystem.zeroHeading(), m_driveSubsystem));
 
