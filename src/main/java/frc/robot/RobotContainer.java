@@ -130,9 +130,7 @@ public class RobotContainer {
         .whileTrue(
             new ParallelCommandGroup(
                 new RunCommand(
-                    () ->
-                        shooterSubsystem.setShooterSpeed(
-                            Constants.ShooterConstants.shooterSpeedPercent),
+                    () -> shooterSubsystem.setPIDSpeed(Constants.ShooterConstants.shooterTargetRpm),
                     shooterSubsystem),
                 new WaitCommand(0.75)
                     .andThen(
@@ -165,10 +163,18 @@ public class RobotContainer {
                 intakeSubsystem))
         .whileFalse(new RunCommand(() -> intakeSubsystem.setIntakeSpeed(0), intakeSubsystem));
 
-    // PIVOT DOWN
+    // INTAKE PIVOT (operator D-pad)
+    operatorController
+        .povUp()
+        .whileTrue(
+            new RunCommand(
+                () ->
+                    intakePivotSubsystem.setIntakePivotSpeed(
+                        -Constants.IntakePivotConstants.intakePivotSpeed),
+                intakePivotSubsystem));
 
-    theController
-        .x()
+    operatorController
+        .povDown()
         .whileTrue(
             new RunCommand(
                 () ->
@@ -176,18 +182,15 @@ public class RobotContainer {
                         Constants.IntakePivotConstants.intakePivotSpeed),
                 intakePivotSubsystem));
 
-    // PIVOT UP
-    theController
-        .a()
-        .whileTrue(
-            new RunCommand(
-                () ->
-                    intakePivotSubsystem.setIntakePivotSpeed(
-                        -Constants.IntakePivotConstants.intakePivotSpeed),
-                intakePivotSubsystem))
+    operatorController
+        .povUp()
+        .or(operatorController.povDown())
         .whileFalse(
             new RunCommand(
                 () -> intakePivotSubsystem.setIntakePivotSpeed(0), intakePivotSubsystem));
+
+    // DEFENSE X-LOCK (hold X to lock swerve modules in an X pattern)
+    theController.x().whileTrue(new RunCommand(() -> m_driveSubsystem.setX(), m_driveSubsystem));
 
     // ZERO HEADING
     theController
