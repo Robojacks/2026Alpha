@@ -5,46 +5,34 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Auto IntakePivot down"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "shoot to ball drop Path"
+                  "name": "Auto Intake"
                 }
               },
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "Auto IntakePivot down"
+                  "pathName": "L ball pickup shoot yup"
                 }
               }
             ]
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 3.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "ball drop to shoot Path"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Auto Shooting Long"
-                }
-              },
               {
                 "type": "sequential",
                 "data": {
@@ -69,30 +57,11 @@
                     }
                   ]
                 }
-              }
-            ]
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "after R ball drop pickup over bump Path"
-                }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Auto IntakePivot down"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Auto Intake"
+                  "name": "Auto Shooting Long"
                 }
               }
             ]

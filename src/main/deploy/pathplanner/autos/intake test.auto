@@ -1,0 +1,43 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Auto IntakePivot down"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Auto IntakePivot up"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Auto IntakePivot down"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Auto IntakePivot up"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "New Path"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

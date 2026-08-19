@@ -34,7 +34,7 @@ public final class Constants {
     public static final int intakePivotMotorCanId = 13;
     public static final int intakePivotMotorCurrentLimitAmps = 25;
 
-    public static final double intakePivotSpeed = -0.2;
+    public static final double intakePivotSpeed = -0.3;
   }
 
   public static class ShooterConstants {
@@ -132,9 +132,9 @@ public final class Constants {
 
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
-    public static final double kDriveDeadband = 0.1;
+    public static final double kDriveDeadband = 0.2;
     public static final int kOperatorControllerPort = 1;
-    public static final double kOperatorDeadband = 0.1;
+    public static final double kOperatorDeadband = 0.2;
   }
 
   public static final class AutoConstants {

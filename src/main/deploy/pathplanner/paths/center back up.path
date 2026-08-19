@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 2.209759450864293,
+        "x": 2.3678112094395285,
         "y": 3.986395101832687
       },
       "prevControl": {
-        "x": 2.713100038459505,
+        "x": 2.8711517970347407,
         "y": 3.960979325349797
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "end center shoot"
     }
   ],
   "rotationTargets": [],
