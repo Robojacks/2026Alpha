@@ -22,7 +22,8 @@ public class IntakePivotSubsystem extends SubsystemBase {
   public IntakePivotSubsystem() {
     // pidController.setTolerance(0.01);
     SparkMaxConfig intakePivotMotorConfig = new SparkMaxConfig();
-    intakePivotMotorConfig.smartCurrentLimit(80);
+    intakePivotMotorConfig.smartCurrentLimit(
+        Constants.IntakePivotConstants.intakePivotMotorCurrentLimitAmps);
     intakePivotMotorConfig.idleMode(IdleMode.kCoast);
     intakePivotMotor.configure(
         intakePivotMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
@@ -38,16 +39,16 @@ public class IntakePivotSubsystem extends SubsystemBase {
     return Commands.sequence(
         Commands.runOnce(
             () -> setIntakePivotSpeed(Constants.IntakePivotConstants.intakePivotSpeed)),
-        Commands.waitSeconds(.7),
+        Commands.waitSeconds(.5),
         Commands.runOnce(() -> setIntakePivotSpeed(0)));
   }
 
   public Command autoIntakePivotUpCommand() {
     return Commands.sequence(
-        Commands.waitSeconds(2.5),
+        Commands.waitSeconds(1),
         Commands.runOnce(
             () -> setIntakePivotSpeed(-Constants.IntakePivotConstants.intakePivotSpeed)),
-        Commands.waitSeconds(1.15),
+        Commands.waitSeconds(1.5),
         Commands.runOnce(() -> setIntakePivotSpeed(0)));
   }
 

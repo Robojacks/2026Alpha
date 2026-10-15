@@ -7,6 +7,7 @@ import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -23,6 +24,7 @@ public class ShooterSubsystem extends SubsystemBase {
       new SparkFlex(Constants.ShooterConstants.shooterMotor2CanId, SparkFlex.MotorType.kBrushless);
 
   private PIDController pidController;
+  private final SimpleMotorFeedforward feedforward;
 
   public ShooterSubsystem() {
     SparkFlexConfig shooterMotor1Config = new SparkFlexConfig();
@@ -45,8 +47,26 @@ public class ShooterSubsystem extends SubsystemBase {
     // encoder = shooterMotor.getEncoder();
 
     pidController =
-        new PIDController(ShooterConstants.kP, ShooterConstants.kI, ShooterConstants.kD);
+        new PIDController(
+            SmartDashboard.getNumber("Shooter/kP", ShooterConstants.kP),
+            SmartDashboard.getNumber("Shooter/kI", ShooterConstants.kI),
+            SmartDashboard.getNumber("Shooter/kD", ShooterConstants.kD));
     pidController.setTolerance(ShooterConstants.kShooterRpmTolerance);
+    SmartDashboard.putData("pid", pidController);
+
+    SmartDashboard.putNumber("kS", ShooterConstants.kS);
+    SmartDashboard.putNumber("kV", ShooterConstants.kV);
+    SmartDashboard.putNumber("kA", ShooterConstants.kA);
+    // Feedforward
+    feedforward =
+        new SimpleMotorFeedforward(
+            SmartDashboard.getNumber("kS", ShooterConstants.kS),
+            SmartDashboard.getNumber("kV", ShooterConstants.kV),
+            SmartDashboard.getNumber("kA", ShooterConstants.kA));
+
+    /*this.setDefaultCommand(
+    setShooterDefaultSpeedCommand(
+        2800)); // Set a default target RPM for the shooter when no other commands are running*/
   }
 
   public void setShooterSpeed(double speed) {
@@ -75,8 +95,10 @@ public class ShooterSubsystem extends SubsystemBase {
     double currentRpm = shooterMotor.getEncoder().getVelocity();
     // Calculate the output from the PID controller based on the current RPM and
     // target RPM.
-    double output = pidController.calculate(currentRpm, rpm);
-    setShooterSpeed(output);
+    double pidSpeed = pidController.calculate(currentRpm, rpm);
+
+    double ffspeed = feedforward.calculate(rpm);
+    setShooterSpeed(pidSpeed + ffspeed);
   }
 
   public Command autoShooterCommand() {
@@ -103,6 +125,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Shooter/CurrentRPM", shooterMotor.getEncoder().getVelocity());
     SmartDashboard.putNumber("Shooter/TargetRPM", pidController.getSetpoint());
