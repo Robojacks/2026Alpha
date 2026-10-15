@@ -9,8 +9,14 @@ package frc.robot;
 
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -26,8 +32,9 @@ public final class Constants {
 
   public static class IntakePivotConstants {
     public static final int intakePivotMotorCanId = 13;
+    public static final int intakePivotMotorCurrentLimitAmps = 25;
 
-    public static final double intakePivotSpeed = 0.2;
+    public static final double intakePivotSpeed = -0.3;
   }
 
   public static class ShooterConstants {
@@ -35,19 +42,24 @@ public final class Constants {
 
     public static final int shooterMotor2CanId = 16;
 
-    public static final double shooterSpeedPercent = 0.45;
+    public static final double shooterSpeedPercent = 0.45; // .45 changed by william
     public static final int shooterTargetRpm = 2800;
     public static final int shooterIdleRpm = 1000;
-    public static final double kP = 0.001;
+    public static final double kP = 0.00045;
     public static final double kI = 0.000;
-    public static final double kD = 0.000;
+    public static final double kD = 0.0000;
+
+    public static final double kS = 0.1;
+    public static final double kV = 0.0001;
+    public static final double kA = 0.00001;
+
     public static final double kShooterRpmTolerance = 60;
   }
 
   public static class ShooterFeederConstants {
     public static final int shooterFeederMotorCanId = 12;
 
-    public static final double shooterFeederSpeed = 1;
+    public static final double shooterFeederSpeed = .75;
   }
 
   public static class AgitatorConstants {
@@ -120,9 +132,9 @@ public final class Constants {
 
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
-    public static final double kDriveDeadband = 0.1;
+    public static final double kDriveDeadband = 0.2;
     public static final int kOperatorControllerPort = 1;
-    public static final double kOperatorDeadband = 0.1;
+    public static final double kOperatorDeadband = 0.2;
   }
 
   public static final class AutoConstants {
@@ -176,5 +188,36 @@ public final class Constants {
 
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
+  }
+
+  public static final class VisionConstants {
+
+    public static final String LIMELIGHT_NAME = "limelight-swerve";
+
+    public static final double MountPostitionForward = Units.inchesToMeters(2.5);
+    public static final double MountPositionSide = 0.0;
+    public static final double MountPositionUp = Units.inchesToMeters(20.5);
+    public static final double MountPositionRoll = 0;
+    public static final double MountPositionPitch = 30;
+    public static final double MountPositionYaw = 0;
+
+    public static final Transform3d ROBOT_TO_CAMERA =
+        new Transform3d(
+            new Translation3d(.18415, .320675, 0.1666875),
+            new Rotation3d(Math.toRadians(180), Math.toRadians(28.44), 0));
+
+    public static final Vector<N3> SINGLE_TAG_STD_DEVS = VecBuilder.fill(1.0, 1.0, 2.0);
+    public static final Vector<N3> MULTI_TAG_STD_DEVS = VecBuilder.fill(0.5, 0.5, 1.0);
+
+    public static final int TARGET_TAG_ID = 4;
+    public static final double FOLLOW_DISTANCE_METERS = 1.5;
+    public static final double FOLLOW_SPEED = 0.5;
+
+    public static final double FOLLOW_KP_TRANSLATION = 0.2;
+    public static final double FOLLOW_KP_ROTATION = 0.02;
+
+    public static final double DISTANCE_TOLERANCE = 0.1;
+    public static final double ANGLE_TOLERANCE = 2.0;
+    public static final String RIGHT = "limelight-right";
   }
 }

@@ -10,8 +10,10 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -19,7 +21,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.OIConstants;
 // import frc.robot.subsystems.AgitatorSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
@@ -28,6 +30,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.RollersSubsystem;
 import frc.robot.subsystems.ShooterFeederSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.VisonSubsystem;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -39,7 +42,10 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
 
   // Subsystems
-  private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
+  public final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
+  private final VisonSubsystem m_visionSubsystem = new VisonSubsystem(m_driveSubsystem);
+  // private final PhotonVisionSubsystem m_photonVisionSubsystem =
+  // new PhotonVisionSubsystem(m_driveSubsystem);
   // private final ExampleSubsystem exampleSubsystem;
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
@@ -50,8 +56,14 @@ public class RobotContainer {
 
   // Controller
   // private final CommandXboxController controller = new CommandXboxController(0);
-  private final Joystick m_Joystick0 = new Joystick((OIConstants.kDriverControllerPort));
-  private final Joystick m_Joystick1 = new Joystick((OIConstants.kOperatorControllerPort));
+  // private final Joystick m_Joystick0 = new Joystick((OIConstants.kDriverControllerPort));
+  // private final Joystick m_Joystick1 = new Joystick((OIConstants.kOperatorControllerPort));
+  private final Translation2d m_fixedTarget;
+
+  private final CommandXboxController driverController =
+      new CommandXboxController((OIConstants.kDriverControllerPort));
+  private final CommandXboxController operatorController =
+      new CommandXboxController((OIConstants.kOperatorControllerPort));
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -65,6 +77,17 @@ public class RobotContainer {
         "Auto IntakePivot up", intakePivotSubsystem.autoIntakePivotUpCommand());
     NamedCommands.registerCommand(
         "Auto IntakePivot down", intakePivotSubsystem.autoIntakePivotDownCommand());
+
+    if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+      m_fixedTarget =
+          new Translation2d(
+              Units.inchesToMeters(469.5),
+              Units.inchesToMeters(158.32)); // Replace with actual red target coordinates
+    } else {
+      m_fixedTarget = new Translation2d(Units.inchesToMeters(181.55), Units.inchesToMeters(158.32));
+    }
+
+    m_visionSubsystem.dummyMethod(); // Call a dummy method to prevent unused variable warning
 
     // Configure the button bindings first so named commands are registered before building autos
     configureButtonBindings();
@@ -86,28 +109,28 @@ public class RobotContainer {
     // new JoystickButton(m_Joystick0, 11).onTrue(intakePivotSubsystem.setOutCommand());
 
     // new JoystickButton(m_Joystick0, 12).onTrue(intakePivotSubsystem.setStowCommand());
-
+    //  m_photonVisionSubsystem.setDefaultCommand(new RunCommand(() -> {},
+    // m_photonVisionSubsystem));
     m_driveSubsystem.setDefaultCommand(
-
         // The left stick controls translation of the robot.
         // Turning is controlled by the X axis of the right stick.
         new RunCommand(
             () -> {
               m_driveSubsystem.drive(
-                  -MathUtil.applyDeadband(m_Joystick0.getY(), OIConstants.kDriveDeadband),
-                  -MathUtil.applyDeadband(m_Joystick0.getX(), OIConstants.kDriveDeadband),
-                  -MathUtil.applyDeadband(m_Joystick1.getX(), OIConstants.kDriveDeadband),
+                  -MathUtil.applyDeadband(driverController.getLeftY(), OIConstants.kDriveDeadband),
+                  -MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband),
+                  -MathUtil.applyDeadband(driverController.getRightX(), OIConstants.kDriveDeadband),
                   true);
             },
             m_driveSubsystem));
     // SHOOT COMMAND
-    new JoystickButton(m_Joystick1, 1)
-        .onTrue(
+    // if (m_XboxController.getRawButton(0))
+    operatorController
+        .rightTrigger()
+        .whileTrue(
             new ParallelCommandGroup(
                 new RunCommand(
-                    () ->
-                        shooterSubsystem.setShooterSpeed(
-                            Constants.ShooterConstants.shooterSpeedPercent),
+                    () -> shooterSubsystem.setPIDSpeed(Constants.ShooterConstants.shooterTargetRpm),
                     shooterSubsystem),
                 new WaitCommand(0.75)
                     .andThen(
@@ -123,7 +146,7 @@ public class RobotContainer {
                                 rollersSubsystem.setRollersSpeed(
                                     Constants.RollersConstants.rollersSpeed),
                             rollersSubsystem))))
-        .onFalse(
+        .whileFalse(
             new ParallelCommandGroup(
                 new RunCommand(
                     () -> shooterFeederSubsystem.setShooterFeederSpeed(0), shooterFeederSubsystem),
@@ -131,43 +154,85 @@ public class RobotContainer {
                 // new RunCommand(() -> agitatorSubsystem.setAgitatorSpeed(0), agitatorSubsystem)
                 new RunCommand(() -> rollersSubsystem.setRollersSpeed(0), rollersSubsystem)));
 
+    // HIGH RPM SHOOT COMMAND
+    operatorController
+        .rightBumper()
+        .whileTrue(
+            new ParallelCommandGroup(
+                new RunCommand(() -> shooterSubsystem.setPIDSpeed(3900), shooterSubsystem),
+                new WaitCommand(0.75)
+                    .andThen(
+                        new RunCommand(
+                            () ->
+                                shooterFeederSubsystem.setShooterFeederSpeed(
+                                    Constants.ShooterFeederConstants.shooterFeederSpeed),
+                            shooterFeederSubsystem)),
+                new WaitCommand(1.5)
+                    .andThen(
+                        new RunCommand(
+                            () ->
+                                rollersSubsystem.setRollersSpeed(
+                                    Constants.RollersConstants.rollersSpeed),
+                            rollersSubsystem))))
+        .whileFalse(
+            new ParallelCommandGroup(
+                new RunCommand(
+                    () -> shooterFeederSubsystem.setShooterFeederSpeed(0), shooterFeederSubsystem),
+                new RunCommand(() -> shooterSubsystem.setShooterSpeed(0), shooterSubsystem),
+                new RunCommand(() -> rollersSubsystem.setRollersSpeed(0), rollersSubsystem)));
+
     // RUN INTAKE
-    new JoystickButton(m_Joystick0, 1)
-        .onTrue(
+    operatorController
+        .leftTrigger()
+        .whileTrue(
             new RunCommand(
                 () -> intakeSubsystem.setIntakeSpeed(Constants.IntakeConstants.intakeSpeed),
                 intakeSubsystem))
-        .onFalse(new RunCommand(() -> intakeSubsystem.setIntakeSpeed(0), intakeSubsystem));
+        .whileFalse(new RunCommand(() -> intakeSubsystem.setIntakeSpeed(0), intakeSubsystem));
 
-    // PIVOT DOWN
-    new JoystickButton(m_Joystick1, 5)
-        .onTrue(
-            new RunCommand(
-                () ->
-                    intakePivotSubsystem.setIntakePivotSpeed(
-                        Constants.IntakePivotConstants.intakePivotSpeed),
-                intakePivotSubsystem))
-        .onFalse(
-            new RunCommand(
-                () -> intakePivotSubsystem.setIntakePivotSpeed(0), intakePivotSubsystem));
-    // PIVOT UP
-    new JoystickButton(m_Joystick1, 3)
-        .onTrue(
+    // INTAKE PIVOT (operator D-pad)
+    operatorController
+        .povUp()
+        .whileTrue(
             new RunCommand(
                 () ->
                     intakePivotSubsystem.setIntakePivotSpeed(
                         -Constants.IntakePivotConstants.intakePivotSpeed),
-                intakePivotSubsystem))
-        .onFalse(
+                intakePivotSubsystem));
+
+    operatorController
+        .povDown()
+        .whileTrue(
+            new RunCommand(
+                () ->
+                    intakePivotSubsystem.setIntakePivotSpeed(
+                        Constants.IntakePivotConstants.intakePivotSpeed),
+                intakePivotSubsystem));
+
+    operatorController
+        .povUp()
+        .or(operatorController.povDown())
+        .whileFalse(
             new RunCommand(
                 () -> intakePivotSubsystem.setIntakePivotSpeed(0), intakePivotSubsystem));
 
+    // DEFENSE X-LOCK (hold X to lock swerve modules in an X pattern)
+    driverController.x().whileTrue(new RunCommand(() -> m_driveSubsystem.setX(), m_driveSubsystem));
+
     // ZERO HEADING
-    new JoystickButton(m_Joystick1, 8)
-        .toggleOnTrue(new InstantCommand(() -> m_driveSubsystem.zeroHeading(), m_driveSubsystem));
+    driverController
+        .start()
+        .whileTrue(new InstantCommand(() -> m_driveSubsystem.zeroHeading(), m_driveSubsystem));
+
+    // Auto Aim
+    // new JoystickButton(m_Joystick1, 10)
+    //    .whileTrue(new TurnToTargetCommand(m_driveSubsystem, m_fixedTarget));
+    // .onFalse(new InstantCommand(() -> m_driveSubsystem.stop(), m_driveSubsystem));
+
     // UNJAMING
-    new JoystickButton(m_Joystick0, 4)
-        .onTrue(
+    operatorController
+        .leftBumper()
+        .whileTrue(
             new ParallelCommandGroup(
                 new RunCommand(
                     () ->
@@ -183,7 +248,7 @@ public class RobotContainer {
                         shooterFeederSubsystem.setShooterFeederSpeed(
                             -Constants.ShooterFeederConstants.shooterFeederSpeed),
                     shooterFeederSubsystem)))
-        .onFalse(
+        .whileFalse(
             new ParallelCommandGroup(
                 new RunCommand(() -> shooterSubsystem.setShooterSpeed(0), shooterSubsystem),
                 new RunCommand(() -> rollersSubsystem.setRollersSpeed(0), rollersSubsystem),
@@ -193,18 +258,15 @@ public class RobotContainer {
 
     // PID bution
 
-    new JoystickButton(m_Joystick1, 12)
-        .onTrue(
-            new RunCommand(
-                () -> shooterSubsystem.setPIDSpeed(Constants.ShooterConstants.shooterTargetRpm),
-                shooterSubsystem))
-        .onFalse(
-            new RunCommand(
-                () -> shooterSubsystem.setPIDSpeed(Constants.ShooterConstants.shooterIdleRpm),
-                shooterSubsystem));
-
-    new JoystickButton(m_Joystick1, 11)
-        .onTrue(new InstantCommand(() -> shooterSubsystem.stopShooterCommand(), shooterSubsystem));
+    /*new JoystickButton(m_Joystick1, 12)
+    .onTrue(
+        new RunCommand(
+            () -> shooterSubsystem.setPIDSpeed(Constants.ShooterConstants.shooterTargetRpm),
+            shooterSubsystem))
+    .onFalse(
+        new RunCommand(
+            () -> shooterSubsystem.setPIDSpeed(Constants.ShooterConstants.shooterIdleRpm),
+            shooterSubsystem)); */
 
     // run auto for robot
     // run auto for robot

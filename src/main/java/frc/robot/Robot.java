@@ -101,6 +101,14 @@ public class Robot extends LoggedRobot {
   @Override
   public void disabledPeriodic() {}
 
+  /*
+  @Override
+  public void robotInit() {
+    // Set the robot's initial pose here if needed, e.g.:
+    // robotContainer.getDriveSubsystem().resetPose(new Pose2d(0, 0, new Rotation2d(0)));
+    robotContainer.m_driveSubsystem.zeroGyro();
+  }
+    */
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
@@ -110,6 +118,9 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       CommandScheduler.getInstance().schedule(autonomousCommand);
     }
+    // not sure if this is needed as it is already in robotInit, but it doesn't hurt to be safe
+    // didn't work for us
+    // robotContainer.m_driveSubsystem.zeroGyro();
   }
 
   /** This function is called periodically during autonomous. */

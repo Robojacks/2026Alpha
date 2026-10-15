@@ -66,6 +66,12 @@
                       "data": {
                         "name": "Auto IntakePivot up"
                       }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Auto IntakePivot down"
+                      }
                     }
                   ]
                 }
