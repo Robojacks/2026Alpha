@@ -1,152 +1,136 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.Utils;
-import edu.wpi.first.math.Matrix;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.VisionConstants;
-import frc.robot.util.LimelightHelpers;
+import java.util.List;
+import java.util.Optional;
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonUtils;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class VisonSubsystem extends SubsystemBase {
+  private final DriveSubsystem m_driveSubsystem;
+  /** Creates a new VisionSubsystem. */
+  private final Field2d field2d = new Field2d();
 
-  DriveSubsystem driveSubsystem;
-  // private static final Translation2d BLUE_HUB   = new Translation2d(4.625594, 4.02);
-  private static final double FIELD_LENGTH = 16.54;
-  private static final double FIELD_WIDTH = 8.21;
-  public static final Field2d visionField2d = new Field2d();
+
+  private final String leftCameraName = "leftCamera";
+    private final String rightCameraName = "rightCamera"
+
+  private final PhotonCamera leftCamera;
+  private final PhotonCamera rightCamera;
+
+  AprilTagFieldLayout fieldLayout;
+  public static Pose2d aprilTag24Pose2d;
+  
+
+  private Transform3d leftCameraTransform =
+      new Transform3d(
+          new Translation3d(
+              Units.inchesToMeters(14), Units.inchesToMeters(11), Units.inchesToMeters(0)),
+          new Rotation3d(0, Units.degreesToRadians(10), Units.degreesToRadians(15)));
+
+  private Transform3d rightCameraTransform =
+      new Transform3d(
+          new Translation3d(
+              Units.inchesToMeters(14), Units.inchesToMeters(-11), Units.inchesToMeters(0)),
+          new Rotation3d(0, Units.degreesToRadians(10), Units.degreesToRadians(-15)));
+
 
   public VisonSubsystem(DriveSubsystem driveSubsystem) {
-    // Constructor code here, if needed
-    this.driveSubsystem = driveSubsystem;
-    SmartDashboard.putData("VisionField", visionField2d);
+    m_driveSubsystem = driveSubsystem;
 
-    LimelightHelpers.setCameraPose_RobotSpace(
-        VisionConstants.LIMELIGHT_NAME,
-        VisionConstants.MountPostitionForward,
-        VisionConstants.MountPositionSide,
-        VisionConstants.MountPositionUp,
-        VisionConstants.MountPositionRoll,
-        VisionConstants.MountPositionPitch,
-        VisionConstants.MountPositionYaw);
+    leftCamera = new PhotonCamera(leftCameraName);
+    rightCamera = new PhotonCamera(rightCameraName);
+
+    fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
+    aprilTag24Pose2d = fieldLayout.getTagPose(24).get().toPose2d();
   }
-
-  // dummy method to do nothing so we don't have an unused variable in robotContainer
-  public void dummyMethod() {}
 
   @Override
   public void periodic() {
-    // Reject if spinning too fast
-    // if (Math.abs(omegaRps) >= 2.0) return;
+    updateCameras();
+  }
 
-    LimelightHelpers.SetRobotOrientation(
-        VisionConstants.LIMELIGHT_NAME, driveSubsystem.getHeading(), 0, 0, 0, 0, 0);
-    // LimelightHelpers.SetRobotOrientation(VisionConstants.RIGHT, headingDeg, 0, 0, 0, 0, 0);
+  public void updateCameras() {
+    updateCamera(leftCamera, leftCameraTransform);
+    updateCamera(rightCamera, rightCameraTransform);
+    SmartDashboard.putData("Vision/Field", field2d);
+    SmartDashboard.putBoolean("Vision/LeftConnected", leftCamera.isConnected());
+    SmartDashboard.putBoolean("Vision/RightConnected", rightCamera.isConnected());
+  }
 
-    var measurementLeft =
-        LimelightHelpers.getBotPoseEstimate_wpiBlue(VisionConstants.LIMELIGHT_NAME);
-    // LimelightHelpers.getBotPoseEstimate_wpiBlue(VisionConstants.LIMELIGHT_NAME);
-    // var measurementRight =
-    // LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(VisionConstants.RIGHT);
+  private void updateCamera(PhotonCamera camera, Transform3d cameraTransform) {
+    List<PhotonPipelineResult> results = camera.getAllUnreadResults();
+    for (var result : results) {
+      if (result.hasTargets()) {
+        PhotonTrackedTarget tar = result.getBestTarget();
 
-    boolean rejectLeft = shouldRejectPose(measurementLeft);
-    /* boolean rejectRight = shouldRejectPose(measurementRight);
+        if (tar != null) {
+          Transform3d c2t = tar.getBestCameraToTarget();
 
-    // Also protect against the null-deref bug in the original code where
-    // rejectPoseRight checked llMeasurementLeft instead of llMeasurementRight
-    if (measurementRight != null && !rejectRight) {
-        if (measurementRight.pose.getX() == 0 && measurementRight.pose.getY() == 0) {
-            rejectRight = true;
+          Optional<Pose3d> tagPose = fieldLayout.getTagPose(tar.getFiducialId());
+
+          if (tagPose.isEmpty() || tar.getPoseAmbiguity() > 0.15) {
+            continue;
+          }
+
+          // Get current robot pose by comparing camera pose to tag pose and transforming with
+          // camera transform.
+          Pose2d p =
+              PhotonUtils.estimateFieldToRobotAprilTag(
+                      c2t, tagPose.get(), cameraTransform.inverse())
+                  .toPose2d();
+
+          // Get distance from robot to april tag
+          Pose2d tag = tagPose.get().toPose2d();
+          double distance = PhotonUtils.getDistanceToPose(p, tag);
+
+          // Dynamically scale trust with range and ambiguity.
+          // Lower std dev = more trust from the estimator.
+          double ambiguity = Math.max(0.0, tar.getPoseAmbiguity());
+          double xyStdDev = calculateXYStdDev(distance, ambiguity);
+          double thetaStdDev = calculateThetaStdDev(distance, ambiguity);
+
+          // Update drive subsystem with vision measurement, including standard deviation for Kalman
+          // filter.
+          m_driveSubsystem.addVisionMeasurement(
+              p,
+              result.getTimestampSeconds(),
+              VecBuilder.fill(xyStdDev, xyStdDev, thetaStdDev));
+
+          field2d.setRobotPose(p);
+          SmartDashboard.putNumber("Vision/DistanceMeters", distance);
+          SmartDashboard.putNumber("Vision/Ambiguity", ambiguity);
+          SmartDashboard.putNumber("Vision/XYStdDev", xyStdDev);
+          SmartDashboard.putNumber("Vision/ThetaStdDev", thetaStdDev);
         }
-    }  */
-
-    Rotation2d currentRotation = driveSubsystem.getPose().getRotation();
-
-    /*if (!rejectLeft && !rejectRight) {
-        double wLeft  = measurementLeft.avgTagArea;
-        double wRight = measurementRight.avgTagArea;
-        double x = (measurementLeft.pose.getX()  * wLeft  + measurementRight.pose.getX()  * wRight) / (wLeft + wRight);
-        double y = (measurementLeft.pose.getY()  * wLeft  + measurementRight.pose.getY()  * wRight) / (wLeft + wRight);
-        double timestamp = Math.min(measurementLeft.timestampSeconds, measurementRight.timestampSeconds);
-        addVisionMeasurement(new Pose2d(x, y, currentRotation), timestamp);
-    } else */ if (!rejectLeft) {
-      System.out.println("XXXXXXXX  Vision Pose Accepted! XXXXXXXXXXXXXXXXXXX");
-      System.out.println(
-          "Robot X=" + measurementLeft.pose.getX() + ", Robot Y=" + measurementLeft.pose.getY());
-      visionField2d.setRobotPose(measurementLeft.pose);
-      double xyStdDev = computeSyStdDev(measurementLeft.avgTagArea, measurementLeft.tagCount);
-      addVisionMeasurement(
-          new Pose2d(measurementLeft.pose.getX(), measurementLeft.pose.getY(), currentRotation),
-          measurementLeft.timestampSeconds,
-          VecBuilder.fill(xyStdDev, xyStdDev, 9999999.0));
-      // addVisionMeasurement(measurementLeft.pose, xyStdDev,
-      // VecBuilder.fill(xyStdDev,xyStdDev,9999999.0));
-    } else {
-      System.out.println("Rejecting left measurement");
-      // visionField2d.setRobotPose(new Pose2d(0, 0, new Rotation2d()));
+      }
     }
-    /*else if (!rejectRight) {
-        addVisionMeasurement(
-            new Pose2d(measurementRight.pose.getX(), measurementRight.pose.getY(), currentRotation),
-            measurementRight.timestampSeconds);
-    }*/
   }
 
-  /** Returns true if the measurement should be rejected. */
-  private boolean shouldRejectPose(LimelightHelpers.PoseEstimate measurement) {
-    if (measurement == null) {
-      System.out.println("camera measurement is null");
-      return true;
-    }
-    if (measurement.tagCount == 0) {
-      System.out.println("tag count is 0");
-      return true;
-    }
-    // if (measurement.tagCount == 1 && measurement.avgTagArea < 0.05) return true;
-    if (measurement.pose.getX() < 0.0 || measurement.pose.getX() > FIELD_LENGTH) return true;
-    if (measurement.pose.getY() < 0.0 || measurement.pose.getY() > FIELD_WIDTH) return true;
-    if (measurement.pose.getX() == 0 && measurement.pose.getY() == 0) return true;
-    return false;
+  private double calculateXYStdDev(double distanceMeters, double ambiguity) {
+    double std = 0.05 + (0.02 * distanceMeters * distanceMeters) + (0.35 * ambiguity);
+    return Math.max(0.05, Math.min(2.0, std));
   }
 
-  private double computeSyStdDev(double avgTagArea, int tagCount) {
-    // This is a heuristic function that maps the average tag area and tag count to a standard
-    // deviation for the y measurement.
-    // You may want to tune this function based on your specific use case and testing.
-    /* AI suggested code:
-    if (tagCount >= 4) {
-        return 0.1; // Very confident with 4 or more tags
-    } else if (tagCount == 3) {
-        return 0.2; // Still pretty good with 3 tags
-    } else if (tagCount == 2) {
-        return 0.5; // Less confident with only 2 tags
-    } else {
-        return 1.0; // Default to a high standard deviation for 1 tag, but this case should be rejected by shouldRejectPose
-    } */
-
-    // Alexandria code:
-    double area = Math.max(avgTagArea, 0.00);
-    double base = 0.5 / area;
-
-    // More tags should reduce the standard deviation, but with diminishing returns
-    double countFactor = 1.0 / Math.max(tagCount, 1.0);
-
-    return Math.min(base * countFactor, 4.0);
+  private double calculateThetaStdDev(double distanceMeters, double ambiguity) {
+    double std = 0.1 + (0.04 * distanceMeters * distanceMeters) + (0.8 * ambiguity);
+    return Math.max(0.1, Math.min(4.0, std));
   }
 
-  public void addVisionMeasurement(
-      Pose2d visionRobotPoseMeters,
-      double timestampSeconds,
-      Matrix<N3, N1> visionMeasurementStdDevs) {
-    driveSubsystem.addVisionMeasurement(
-        visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
+  public void dummyMethod() {
+    // Intentionally empty: keeps this subsystem referenced in RobotContainer.
   }
-
-  // Vision processing methods here, if needed
-
 }
